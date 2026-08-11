@@ -114,6 +114,8 @@ const TOKEN_KEY = "zhanblog_admin_token";
                         <textarea id="np-content" style="display:none;"></textarea>
                     </div>
                 </div>
+                <!-- 本地图片上传（点工具栏图片按钮触发） -->
+                <input type="file" id="image-input" accept="image/*" class="hidden">
 
                 <!-- 发布 -->
                 <div class="mt-6 flex flex-col gap-3">
@@ -248,7 +250,14 @@ const TOKEN_KEY = "zhanblog_admin_token";
                     theme: isDark() ? "pastel-on-dark" : "default",
                     previewTheme: isDark() ? "dark" : "default",
                     editorTheme: isDark() ? "pastel-on-dark" : "default",
+                    toolbarHandlers: {
+                        image: function () {
+                            // 点工具栏图片按钮 → 打开本地文件选择
+                            $("image-input").click();
+                        },
+                    },
                 });
+                bindImageUpload();
             } catch (e) {
                 setStatus("编辑器加载出错：" + e.message, false);
             }
@@ -321,6 +330,46 @@ const TOKEN_KEY = "zhanblog_admin_token";
         // 未连接时提示
         if (!localStorage.getItem(TOKEN_KEY)) {
             setStatus("提示：尚未配置 GitHub 令牌，发布前请先到后台「GitHub 连接」保存令牌。", false);
+        }
+
+        // 本地图片上传：选图 → 上传到 GitHub public/images/ → 插入图片链接
+        function bindImageUpload() {
+            const input = $("image-input");
+            input.addEventListener("change", async function () {
+                const file = input.files[0];
+                input.value = ""; // 允许重复选同一文件
+                if (!file) return;
+                const token = localStorage.getItem(TOKEN_KEY);
+                if (!token) { setStatus("未配置 GitHub 令牌，无法上传图片。", false); return; }
+
+                const reader = new FileReader();
+                reader.onload = async function (e) {
+                    const base64 = e.target.result.split(",")[1];
+                    const name = file.name.replace(/\.[^.]+$/, "");
+                    const ext = (file.name.split(".").pop() || "png").toLowerCase();
+                    const filename = Date.now() + "-" + name.replace(/[^\w一-龥-]/g, "").slice(0, 30) + "." + ext;
+                    const path = "public/images/" + filename;
+                    const url = BASE + "images/" + filename;
+                    setStatus("正在上传图片…", undefined);
+                    try {
+                        const res = await fetch(CFG.api + "/repos/" + CFG.owner + "/" + CFG.repo + "/contents/" + path, {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json", Authorization: "Bearer " + token, Accept: "application/vnd.github+json" },
+                            body: JSON.stringify({ message: "上传图片：" + filename, content: base64, branch: "main" }),
+                        });
+                        const data = await res.json();
+                        if (data.content) {
+                            contentEditor.insertValue("![" + name + "](" + url + ")");
+                            setStatus("图片已上传并插入正文（约 2 分钟后线上可见）。", true);
+                        } else {
+                            setStatus("图片上传失败：" + (data.message || "未知错误"), false);
+                        }
+                    } catch (err) {
+                        setStatus("图片上传出错：" + err.message, false);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
         }
 
         initEditor();
