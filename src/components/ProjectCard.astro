@@ -14,7 +14,7 @@ const className = Astro.props.class;
 const { title, description, tech, url: pUrl, github, status } = project.data;
 const detailUrl = url("projects/" + project.slug + "/");
 ---
-<div class:list={["card-base relative flex flex-col rounded-[var(--radius-large)] p-7 md:p-8 transition hover:-translate-y-1 hover:shadow-lg hover:border-[var(--primary)]", className]} style={style}>
+<div class:list={["card-base relative flex flex-col rounded-[var(--radius-large)] p-7 md:p-8 transition project-card-hover", className]} style={style}>
     <!-- 覆盖链接：点击卡片任意处进入项目详情页 -->
     <a href={detailUrl} class="absolute inset-0 z-20 rounded-[var(--radius-large)]" aria-label={"查看项目：" + title}></a>
 
@@ -67,3 +67,15 @@ const detailUrl = url("projects/" + project.slug + "/");
         </a>
     </div>
 </div>
+
+<style>
+    /* 悬浮效果：抬升 + 阴影 + 主色边框（纯 CSS，亮/暗主题均生效） */
+    .project-card-hover:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12) !important;
+        border-color: var(--primary) !important;
+    }
+    :global(.dark) .project-card-hover:hover {
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    }
+</style>

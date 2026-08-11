@@ -420,4 +420,6 @@ Twikoo（Hugging Face Space）/ GitHub Actions / SMTP（QQ 或 163 邮箱）
 - **工具**：新增「一键提交上线.bat」—— 双击自动「拉取远程 → 提交本地所有修改 → 推送」，本地改完内容一键上线
 - 提交：food-time 项目状态改为 agent项目；教程更新脚本用法
 - **bug 修复**：food-time.md 文件开头被误加 `<br />`（在 frontmatter `---` 之前），**破坏 frontmatter 格式导致项目不显示**（Astro 内容文件必须从 `---` 开始）→ 去掉开头的多余内容修复。⚠️ 编辑 `.md` 内容文件时不要动 frontmatter 前面（`---` 必须在文件第一行）
+- **功能**：项目卡片**悬浮效果改纯 CSS**（抬升 translateY + 阴影 + 主色边框，`!important` 保证亮/暗主题均生效；原 Tailwind hover 类在部分环境不生效）；曾尝试 hover 变暗（已按用户要求移除，只保留悬浮）
+- **功能**：项目详情页 `/projects/[slug]/`（标题/状态/技术栈/链接/正文），卡片点击进入
 - 已推送 commit：图片上传 `987856c`、图片按钮修复 `37913c4`、构建根治 `ea2df2a`、发布按钮修复（待推送）、文档 `58d6525`
