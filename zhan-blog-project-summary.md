@@ -115,7 +115,7 @@ zhan-blog/
 │   │   ├── posts/                  ←   每篇文章一个 .md
 │   │   ├── projects/               ←   项目展示数据（.md，frontmatter 见第八节）
 │   │   └── spec/about.md           ←   关于页内容
-│   ├── pages/                      ← 路由页面（index/projects/services/about/contact/archive/posts）
+│   ├── pages/                      ← 路由页面（index/projects/services/about/contact/archive/posts/admin）
 │   ├── components/                 ← 可复用组件
 │   ├── layouts/                    ← 页面骨架模板
 │   └── styles/                     ← 样式（配色/字体变量）
@@ -240,6 +240,13 @@ featured: true         # 可选，是否出现在首页「精选项目」
 ```
 
 > 服务页当前为代码内硬编码（`src/pages/services.astro`），后续可改为 content 驱动。
+
+### 内容管理后台（2026-08-11 新增）
+
+- 地址：`/zhan-blog/admin/`，无后端，纯 GitHub Contents API
+- 博主在**自己浏览器**填一次 GitHub PAT（classic，`repo` scope，只存 localStorage 不入库），即可在页面写文章 → 直接提交 `src/content/posts/*.md` 到 main → 自动部署
+- ⚠️ 曾试 OAuth device flow：GitHub 授权端点不支持浏览器 CORS，无法纯前端换 token，故用 PAT
+- ⚠️ 安全：PAT 有 `repo` 权限，绝不写入源码/仓库；泄露则去 GitHub 撤销
 
 ***
 

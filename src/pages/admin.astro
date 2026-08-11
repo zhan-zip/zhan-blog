@@ -1,0 +1,307 @@
+---
+import { Icon } from "astro-icon/components";
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+
+// 后台配置
+const OWNER = "zhan-zip";
+const REPO = "zhan-blog";
+const POSTS_PATH = "src/content/posts";
+---
+
+<MainGridLayout title="内容管理">
+    <section class="onload-animation transition bg-[var(--card-bg)] rounded-[var(--radius-large)] px-6 md:px-10 py-10 md:py-12">
+        <h1 class="transition font-extrabold text-3xl md:text-4xl leading-tight text-90">
+            内容管理后台
+        </h1>
+        <p class="transition text-75 mt-3 leading-relaxed max-w-[36rem]">
+            在这里写文章，保存后会自动提交到 GitHub 并发布到博客。首次使用需要填入一次 GitHub 访问令牌。
+        </p>
+    </section>
+
+    <!-- 授权区 -->
+    <section class="mt-12">
+        <div class="card-base rounded-[var(--radius-large)] p-6 md:p-8 transition">
+            <div class="flex items-center gap-3">
+                <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--btn-regular-bg)] text-[var(--primary)]">
+                    <Icon name="fa6-brands:github" class="text-xl"></Icon>
+                </div>
+                <h2 class="transition font-bold text-xl text-90">GitHub 连接</h2>
+                <span id="auth-state" class="ml-auto text-sm font-medium text-75">检查中…</span>
+            </div>
+
+            <!-- 未授权：输入令牌 -->
+            <div id="auth-flow" class="mt-6 hidden">
+                <p class="transition text-75 text-sm">请输入你的 GitHub 个人访问令牌（PAT）：</p>
+                <div class="mt-4 flex flex-wrap items-center gap-3">
+                    <input id="token-input" type="password" placeholder="ghp_…"
+                           autocomplete="off" spellcheck="false"
+                           class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90 font-mono text-sm min-w-[16rem] flex-1 max-w-[24rem]">
+                    <button id="save-token"
+                            class="transition flex items-center gap-2 h-11 px-6 rounded-lg bg-[var(--primary)] text-white dark:text-black/80 font-bold hover:brightness-110 active:scale-95">
+                        <Icon name="material-symbols:link-rounded"></Icon>
+                        保存并连接
+                    </button>
+                </div>
+                <p class="transition text-xs text-75 mt-3">
+                    🔒 令牌只保存在<b>当前浏览器</b>，不会上传服务器、不会写入代码仓库。如何创建令牌：
+                    GitHub → Settings → Developer settings → Personal access tokens (classic) → 勾选 <code>repo</code> scope → Generate。
+                </p>
+            </div>
+
+            <!-- 已授权 -->
+            <div id="auth-ok" class="mt-6 hidden">
+                <p class="transition text-sm text-75">已连接 <span id="auth-user" class="font-bold text-90"></span> ✓</p>
+                <button id="logout-btn" class="transition mt-3 text-sm font-medium text-red-500 hover:underline">断开连接（清除令牌）</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 文章管理 -->
+    <section id="post-manager" class="mt-12 hidden">
+        <div class="flex items-center justify-between">
+            <h2 class="onload-animation transition flex items-center gap-3 font-bold text-2xl md:text-3xl text-90">
+                <span class="w-1.5 h-6 rounded-md bg-[var(--primary)]"></span>
+                已有文章
+            </h2>
+            <button id="refresh-list" class="transition text-sm font-medium text-[var(--primary)] hover:underline">刷新</button>
+        </div>
+        <ul id="post-list" class="mt-6 card-base rounded-[var(--radius-large)] p-4 md:p-6 flex flex-col gap-2 transition"></ul>
+
+        <div class="flex items-center justify-between mt-14">
+            <h2 class="onload-animation transition flex items-center gap-3 font-bold text-2xl md:text-3xl text-90">
+                <span class="w-1.5 h-6 rounded-md bg-[var(--primary)]"></span>
+                新建文章
+            </h2>
+        </div>
+        <div class="mt-6 card-base rounded-[var(--radius-large)] p-6 md:p-8 transition">
+            <form id="new-post-form" class="flex flex-col gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label for="np-title" class="transition text-sm font-medium text-75">标题 *</label>
+                        <input id="np-title" name="title" type="text" required placeholder="文章标题"
+                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label for="np-slug" class="transition text-sm font-medium text-75">文件名（英文/拼音，用于网址）*</label>
+                        <input id="np-slug" name="slug" type="text" required placeholder="如 my-first-post"
+                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label for="np-date" class="transition text-sm font-medium text-75">发布日期</label>
+                        <input id="np-date" name="published" type="date"
+                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label for="np-category" class="transition text-sm font-medium text-75">分类</label>
+                        <input id="np-category" name="category" type="text" placeholder="如 教程"
+                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label for="np-tags" class="transition text-sm font-medium text-75">标签（逗号分隔）</label>
+                        <input id="np-tags" name="tags" type="text" placeholder="如 前端, Vue"
+                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label for="np-desc" class="transition text-sm font-medium text-75">摘要</label>
+                    <input id="np-desc" name="description" type="text" placeholder="一句话摘要（可选）"
+                           class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label for="np-content" class="transition text-sm font-medium text-75">正文（Markdown）*</label>
+                    <textarea id="np-content" name="content" rows="12" required placeholder="用 Markdown 写正文…"
+                              class="transition px-4 py-3 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90 resize-y font-mono text-sm"></textarea>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <button type="submit" id="np-submit"
+                            class="transition flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-[var(--primary)] text-white dark:text-black/80 font-bold hover:brightness-110 active:scale-95">
+                        <Icon name="material-symbols:upload-rounded"></Icon>
+                        发布文章
+                    </button>
+                    <p id="np-status" class="transition text-sm text-75" role="status" aria-live="polite"></p>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- 后台逻辑：PAT + GitHub Contents API -->
+    <script is:inline>
+        (function () {
+            const CFG = {
+                owner: "zhan-zip",
+                repo: "zhan-blog",
+                postsPath: "src/content/posts",
+                api: "https://api.github.com",
+            };
+            const TOKEN_KEY = "zhanblog_admin_token";
+            const USER_KEY = "zhanblog_admin_user";
+
+            const $ = (id) => document.getElementById(id);
+            const stateEl = $("auth-state");
+            const flowEl = $("auth-flow");
+            const okEl = $("auth-ok");
+            const managerEl = $("post-manager");
+
+            function setState(text) { stateEl.textContent = text; }
+            function setStatus(el, text, ok) {
+                el.textContent = text;
+                el.classList.toggle("text-emerald-600", ok === true);
+                el.classList.toggle("dark:text-emerald-400", ok === true);
+                el.classList.toggle("text-red-500", ok === false);
+                el.classList.toggle("dark:text-red-400", ok === false);
+                if (ok === true) el.classList.remove("text-75");
+            }
+
+            function utf8ToBase64(str) {
+                const bytes = new TextEncoder().encode(str);
+                let bin = "";
+                bytes.forEach((b) => (bin += String.fromCharCode(b)));
+                return btoa(bin);
+            }
+
+            function onAuthed(token) {
+                flowEl.classList.add("hidden");
+                okEl.classList.remove("hidden");
+                managerEl.classList.remove("hidden");
+                setState("已连接");
+                fetch(CFG.api + "/user", { headers: { Authorization: "Bearer " + token } })
+                    .then((r) => r.json())
+                    .then((u) => { if (u.login) { $("auth-user").textContent = u.login; localStorage.setItem(USER_KEY, u.login); } })
+                    .catch(() => {});
+                loadPosts();
+            }
+
+            function logout() {
+                localStorage.removeItem(TOKEN_KEY);
+                localStorage.removeItem(USER_KEY);
+                location.reload();
+            }
+
+            // ---------- 文章管理 ----------
+            async function loadPosts() {
+                const token = localStorage.getItem(TOKEN_KEY);
+                const listEl = $("post-list");
+                listEl.textContent = "加载中…";
+                try {
+                    const res = await fetch(CFG.api + "/repos/" + CFG.owner + "/" + CFG.repo + "/contents/" + CFG.postsPath, {
+                        headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" },
+                    });
+                    const data = await res.json();
+                    if (!Array.isArray(data)) throw new Error(data.message || "无法获取文章列表");
+                    const items = data.filter((f) => f.name.endsWith(".md") && f.type === "file");
+                    if (items.length === 0) { listEl.textContent = "还没有文章。"; return; }
+                    listEl.innerHTML = "";
+                    items.sort((a, b) => (a.name < b.name ? 1 : -1));
+                    items.forEach((f) => {
+                        const li = document.createElement("li");
+                        li.className = "flex items-center justify-between gap-4 px-4 py-2.5 rounded-lg bg-[var(--btn-regular-bg)]";
+                        const name = document.createElement("span");
+                        name.className = "transition text-sm text-90 truncate";
+                        name.textContent = f.name;
+                        const link = document.createElement("a");
+                        link.className = "transition shrink-0 text-sm font-medium text-[var(--primary)] hover:underline";
+                        link.textContent = "查看";
+                        link.href = "/zhan-blog/posts/" + f.name.replace(".md", "") + "/";
+                        link.target = "_blank";
+                        li.append(name, link);
+                        listEl.appendChild(li);
+                    });
+                } catch (e) {
+                    listEl.textContent = "加载失败：" + e.message;
+                }
+            }
+
+            // 保存令牌
+            $("save-token").addEventListener("click", async function () {
+                const token = $("token-input").value.trim();
+                if (!token) { setState("请输入令牌"); return; }
+                setState("连接中…");
+                try {
+                    const res = await fetch(CFG.api + "/user", { headers: { Authorization: "Bearer " + token } });
+                    const data = await res.json();
+                    if (data.login) {
+                        localStorage.setItem(TOKEN_KEY, token);
+                        onAuthed(token);
+                    } else {
+                        setState("令牌无效：" + (data.message || "请检查令牌"));
+                    }
+                } catch (e) {
+                    setState("连接失败：" + e.message);
+                }
+            });
+            $("token-input").addEventListener("keydown", function (e) {
+                if (e.key === "Enter") $("save-token").click();
+            });
+
+            // 新建文章
+            $("new-post-form").addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const token = localStorage.getItem(TOKEN_KEY);
+                const statusEl = $("np-status");
+                const submitBtn = $("np-submit");
+                const title = $("np-title").value.trim();
+                const slug = $("np-slug").value.trim();
+                const published = $("np-date").value || new Date().toISOString().slice(0, 10);
+                const category = $("np-category").value.trim();
+                const tags = $("np-tags").value.split(/[,，]/).map((t) => t.trim()).filter(Boolean);
+                const description = $("np-desc").value.trim();
+                const content = $("np-content").value;
+
+                if (!title || !slug || !content) { setStatus(statusEl, "请填写标题、文件名和正文。", false); return; }
+
+                let fm = "---\n";
+                fm += "title: " + title + "\n";
+                fm += "published: " + published + "\n";
+                if (description) fm += "description: " + description + "\n";
+                if (category) fm += "category: " + category + "\n";
+                if (tags.length) fm += "tags: [" + tags.join(", ") + "]\n";
+                fm += "---\n\n";
+                const md = fm + content.trim() + "\n";
+
+                submitBtn.disabled = true;
+                setStatus(statusEl, "发布中…", undefined);
+                try {
+                    const res = await fetch(CFG.api + "/repos/" + CFG.owner + "/" + CFG.repo + "/contents/" + CFG.postsPath + "/" + slug + ".md", {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token, Accept: "application/vnd.github+json" },
+                        body: JSON.stringify({
+                            message: "后台发布文章：" + title,
+                            content: utf8ToBase64(md),
+                            branch: "main",
+                        }),
+                    });
+                    const data = await res.json();
+                    if (data.content) {
+                        setStatus(statusEl, "已发布！约 2 分钟后线上生效。可继续写下一篇。", true);
+                        this.reset();
+                        $("np-date").value = new Date().toISOString().slice(0, 10);
+                        loadPosts();
+                    } else {
+                        setStatus(statusEl, "发布失败：" + (data.message || "未知错误"), false);
+                    }
+                } catch (err) {
+                    setStatus(statusEl, "发布出错：" + err.message, false);
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            });
+
+            $("refresh-list").addEventListener("click", loadPosts);
+            $("logout-btn").addEventListener("click", logout);
+
+            // ---------- 初始化 ----------
+            (function init() {
+                $("np-date").value = new Date().toISOString().slice(0, 10);
+                const token = localStorage.getItem(TOKEN_KEY);
+                if (token) {
+                    onAuthed(token);
+                } else {
+                    setState("未连接");
+                    flowEl.classList.remove("hidden");
+                }
+            })();
+        })();
+    </script>
+</MainGridLayout>
