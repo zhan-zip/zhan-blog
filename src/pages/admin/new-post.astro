@@ -112,6 +112,15 @@ const TOKEN_KEY = "zhanblog_admin_token";
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm flex flex-col">
                         <label for="np-content" class="transition text-sm font-medium text-75 mb-3">正文（Markdown）*</label>
+                        <!-- 选中文字后弹出的格式工具栏 -->
+                        <div id="fmt-toolbar" class="hidden mb-3 flex items-center gap-1 p-1.5 rounded-lg bg-[var(--btn-regular-bg)] border border-black/10 dark:border-white/15 w-fit">
+                            <button type="button" data-fmt="bold" title="加粗" class="fmt-btn"><Icon name="material-symbols:format-bold-rounded"></Icon></button>
+                            <button type="button" data-fmt="italic" title="斜体" class="fmt-btn"><Icon name="material-symbols:format-italic-rounded"></Icon></button>
+                            <button type="button" data-fmt="strike" title="删除线" class="fmt-btn"><Icon name="material-symbols:format-strikethrough-rounded"></Icon></button>
+                            <button type="button" data-fmt="code" title="行内代码" class="fmt-btn"><Icon name="material-symbols:code-rounded"></Icon></button>
+                            <button type="button" data-fmt="quote" title="引用" class="fmt-btn"><Icon name="material-symbols:format-quote-rounded"></Icon></button>
+                            <button type="button" data-fmt="link" title="链接" class="fmt-btn"><Icon name="material-symbols:link-rounded"></Icon></button>
+                        </div>
                         <textarea id="np-content" rows="20" required placeholder="在这里用 Markdown 写正文，右侧实时预览…"
                                   class="transition flex-1 w-full h-[calc(100vh-23rem)] min-h-[520px] px-4 py-3 rounded-lg bg-transparent border border-black/25 dark:border-white/25 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] text-90 resize-none font-mono text-sm leading-relaxed"></textarea>
                     </div>
@@ -191,6 +200,26 @@ const TOKEN_KEY = "zhanblog_admin_token";
         .insert-btn:active {
             transform: scale(0.95);
         }
+        .fmt-btn {
+            transition: all 0.15s ease;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            color: var(--btn-content);
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
+        .fmt-btn:hover {
+            background: var(--btn-regular-bg-hover);
+            color: var(--primary);
+        }
+        .fmt-btn:active {
+            transform: scale(0.9);
+        }
     </style>
 
     <script>
@@ -240,6 +269,66 @@ const TOKEN_KEY = "zhanblog_admin_token";
             preview.innerHTML = mdEngine.render(text);
         }
         content.addEventListener("input", renderPreview);
+
+        // 选中文字后显示格式工具栏，点击给选中文字包裹 Markdown 语法
+        const toolbar = $("fmt-toolbar");
+        const fmtMap = {
+            bold: ["**", "**"],
+            italic: ["*", "*"],
+            strike: ["~~", "~~"],
+            code: ["`", "`"],
+        };
+
+        function showToolbar() {
+            if (content.selectionStart !== content.selectionEnd) {
+                toolbar.classList.remove("hidden");
+            } else {
+                toolbar.classList.add("hidden");
+            }
+        }
+        function hideToolbar() { toolbar.classList.add("hidden"); }
+
+        // 用 selectionchange 监听选区变化（拖选/双击/shift 选都可靠触发）
+        document.addEventListener("selectionchange", () => {
+            if (content.selectionStart !== content.selectionEnd) {
+                toolbar.classList.remove("hidden");
+            } else {
+                toolbar.classList.add("hidden");
+            }
+        });
+        // 失焦时隐藏工具栏（点击工具栏按钮不会失焦，因为按钮 mousedown preventDefault）
+        content.addEventListener("blur", () => {
+            setTimeout(() => { if (document.activeElement !== content) hideToolbar(); }, 150);
+        });
+
+        document.querySelectorAll("#fmt-toolbar [data-fmt]").forEach((btn) => {
+            // mousedown 阻止默认，避免点击按钮时 textarea 失焦丢选区
+            btn.addEventListener("mousedown", (e) => e.preventDefault());
+            btn.addEventListener("click", () => {
+                const start = content.selectionStart, end = content.selectionEnd;
+                if (start === end) return;
+                const sel = content.value.slice(start, end);
+                const fmt = btn.dataset.fmt;
+                let caretStart, caretEnd;
+                if (fmt === "quote") {
+                    const quoted = sel.split("\n").map((line) => "> " + line).join("\n");
+                    content.value = content.value.slice(0, start) + quoted + content.value.slice(end);
+                    caretStart = start; caretEnd = start + quoted.length;
+                } else if (fmt === "link") {
+                    content.value = content.value.slice(0, start) + "[" + sel + "](https://)" + content.value.slice(end);
+                    caretStart = start + 1; caretEnd = start + 1 + sel.length;
+                } else {
+                    const [before, after] = fmtMap[fmt];
+                    content.value = content.value.slice(0, start) + before + sel + after + content.value.slice(end);
+                    caretStart = start + before.length; caretEnd = start + before.length + sel.length;
+                }
+                content.focus();
+                content.selectionStart = caretStart;
+                content.selectionEnd = caretEnd;
+                renderPreview();
+                hideToolbar();
+            });
+        });
 
         // 点击语法按钮 → 插入到正文光标处
         function insertAtCursor(text) {
