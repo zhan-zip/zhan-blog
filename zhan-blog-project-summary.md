@@ -207,6 +207,16 @@ Hero：我是谁一句话 + 双 CTA（[联系我] [看我的项目]）
 
 滚动渐入动画 / 平滑滚动 / 亮暗切换 / 返回顶部 / 卡片 hover 抬升 / 代码块复制 + 行号高亮 / 阅读进度条 / 目录跟随滚动高亮
 
+### 6.7 数据统计：Umami Cloud（2026-08-12 接入）
+
+- **Umami Cloud 免费版**（Hobby，$0/月，10 万 events/月，1 个网站）
+- **注册方式**：用 GitHub 一键注册（绕开邮箱验证），关联账号 2899893413@qq.com
+- **网站**：zhan-Blog，Website ID `d550f252-7127-439a-b72e-b32a42f4baa1`，数据区域 US
+- **脚本**：`<script defer src="https://cloud.umami.is/script.js" data-website-id="d550f252-7127-439a-b72e-b32a42f4baa1">` 已加在 `Layout.astro` head
+- **国内访问实测**：script.js 200（~1.5s），页面访问已成功上报（gateway.umami.is/api/send）
+- **管理后台**：cloud.umami.is（GitHub 登录），看访客/来源/页面/设备等
+- 注意：Hobby 免费版仅 1 个网站、6 个月数据保留
+
 ***
 
 ## 七、关键配置（实施时填）
