@@ -353,7 +353,7 @@ const TOKEN_KEY = "zhanblog_admin_token";
                     const base64 = e.target.result.split(",")[1];
                     const name = file.name.replace(/\.[^.]+$/, "");
                     const ext = (file.name.split(".").pop() || "png").toLowerCase();
-                    const filename = Date.now() + "-" + name.replace(/[^\w一-龥-]/g, "").slice(0, 30) + "." + ext;
+                    const filename = Date.now() + "-" + name.replace(/[^a-zA-Z0-9-_]/g, "").slice(0, 30) + "." + ext;
                     const path = "public/images/" + filename;
                     const url = BASE + "images/" + filename;
                     setStatus("正在上传图片…", undefined);
