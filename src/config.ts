@@ -12,8 +12,8 @@ export const siteConfig: SiteConfig = {
 	subtitle: "一盏的博客",
 	lang: "zh_CN", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
 	themeColor: {
-		hue: 225, // 主色：蓝色为主、夹杂亮青色
-		fixed: true, // 固定品牌主题色，访客不可调
+		hue: 210, // 主色：蓝青（青色多一些，亮/暗均用此色）
+		fixed: false, // 访客可自由切换主题色
 	},
 	banner: {
 		enable: false,

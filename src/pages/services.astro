@@ -50,7 +50,7 @@ const workflow = [
             <span class="w-1.5 h-6 rounded-md bg-[var(--primary)]"></span>
             服务方向
         </h2>
-        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
             {services.map((s, i) => (
                 <div class:list={["card-base flex flex-col rounded-[var(--radius-large)] p-6 md:p-7 transition onload-animation"]}
                      style={`animation-delay: calc(var(--content-delay) + ${i * 80}ms);`}>
@@ -78,7 +78,7 @@ const workflow = [
             <span class="w-1.5 h-6 rounded-md bg-[var(--primary)]"></span>
             合作流程
         </h2>
-        <div class="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-8">
             {workflow.map((w, i) => (
                 <div class:list={["card-base rounded-[var(--radius-large)] p-6 transition onload-animation"]}
                      style={`animation-delay: calc(var(--content-delay) + ${i * 80}ms);`}>

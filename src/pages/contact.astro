@@ -25,7 +25,7 @@ const channels = profileConfig.links;
             <span class="w-1.5 h-6 rounded-md bg-[var(--primary)]"></span>
             联系渠道
         </h2>
-        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
             {email && (
                 <a href={`mailto:${email}`}
                    class="card-base flex items-center gap-4 rounded-[var(--radius-large)] p-6 transition hover:scale-[1.02] active:scale-[0.98]">
@@ -60,8 +60,8 @@ const channels = profileConfig.links;
             给我留言
         </h2>
         <div class="mt-8 card-base rounded-[var(--radius-large)] p-6 md:p-8 transition">
-            <form id="contact-form" class="flex flex-col gap-6" onsubmit="return false;">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form id="contact-form" class="flex flex-col gap-8" onsubmit="return false;">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="flex flex-col gap-2">
                         <label for="cf-name" class="transition text-sm font-medium text-75">称呼</label>
                         <input id="cf-name" name="name" type="text" placeholder="你的称呼"
