@@ -412,4 +412,5 @@ Twikoo（Hugging Face Space）/ GitHub Actions / SMTP（QQ 或 163 邮箱）
 - **bug 修复**：图片文件名含中文会带来部署/URL 风险 → 上传文件名只保留 ASCII
 - **说明**：图片上传到 GitHub 后，本地预览看不到是正常的（图片在远程、本地无此文件），**线上部署完成（约 2 分钟）后可见**；应在线上 admin 或部署后查看
 - **bug 修复**：**发布按钮在 `<form>` 外**（重构布局时按钮挪到编辑区下方），点击不触发表单提交 → 按钮 `type="button"` + 点击时 `form.requestSubmit()` 手动触发
+- **bug 修复**：重复发布同名文章时报 `Invalid request. "sha" wasn't supplied`（GitHub 更新已有文件需带当前版本 sha）→ 发布前先 GET 查文件是否存在，存在则 PUT 带 sha 更新
 - 已推送 commit：图片上传 `987856c`、图片按钮修复 `37913c4`、构建根治 `ea2df2a`、发布按钮修复（待推送）、文档 `58d6525`

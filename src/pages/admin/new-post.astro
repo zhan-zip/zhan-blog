@@ -312,10 +312,26 @@ const TOKEN_KEY = "zhanblog_admin_token";
             submitBtn.disabled = true;
             setStatus("发布中…", undefined);
             try {
-                const res = await fetch(CFG.api + "/repos/" + CFG.owner + "/" + CFG.repo + "/contents/" + CFG.postsPath + "/" + slug + ".md", {
+                const path = CFG.postsPath + "/" + slug + ".md";
+                // 文件已存在则获取 sha（GitHub 更新已有文件必须带 sha）
+                let existingSha = null;
+                try {
+                    const check = await fetch(CFG.api + "/repos/" + CFG.owner + "/" + CFG.repo + "/contents/" + path, {
+                        headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" },
+                    });
+                    if (check.ok) {
+                        const d = await check.json();
+                        existingSha = d.sha;
+                    }
+                } catch (e) { /* 文件不存在则跳过 */ }
+
+                const putBody = { message: "后台发布文章：" + title, content: utf8ToBase64(mdFile), branch: "main" };
+                if (existingSha) putBody.sha = existingSha;
+
+                const res = await fetch(CFG.api + "/repos/" + CFG.owner + "/" + CFG.repo + "/contents/" + path, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json", Authorization: "Bearer " + token, Accept: "application/vnd.github+json" },
-                    body: JSON.stringify({ message: "后台发布文章：" + title, content: utf8ToBase64(mdFile), branch: "main" }),
+                    body: JSON.stringify(putBody),
                 });
                 const data = await res.json();
                 if (data.content) {
