@@ -110,10 +110,10 @@ const TOKEN_KEY = "zhanblog_admin_token";
 
                 <!-- 下面：编辑（textarea，原生可靠选择）+ 预览，左右等高 -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm flex flex-col">
+                    <div class="relative rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm flex flex-col">
                         <label for="np-content" class="transition text-sm font-medium text-75 mb-3">正文（Markdown）*</label>
-                        <!-- 选中文字后弹出的格式工具栏 -->
-                        <div id="fmt-toolbar" class="hidden mb-3 flex items-center gap-1 p-1.5 rounded-lg bg-[var(--btn-regular-bg)] border border-black/10 dark:border-white/15 w-fit">
+                        <!-- 选中文字后弹出的浮动格式工具栏（跟随鼠标） -->
+                        <div id="fmt-toolbar" class="hidden absolute z-10 flex items-center gap-1 p-1.5 rounded-lg bg-[var(--btn-regular-bg)] border border-black/10 dark:border-white/15 shadow-md">
                             <button type="button" data-fmt="bold" title="加粗" class="fmt-btn"><Icon name="material-symbols:format-bold-rounded"></Icon></button>
                             <button type="button" data-fmt="italic" title="斜体" class="fmt-btn"><Icon name="material-symbols:format-italic-rounded"></Icon></button>
                             <button type="button" data-fmt="strike" title="删除线" class="fmt-btn"><Icon name="material-symbols:format-strikethrough-rounded"></Icon></button>
@@ -279,55 +279,108 @@ const TOKEN_KEY = "zhanblog_admin_token";
             code: ["`", "`"],
         };
 
-        function showToolbar() {
-            if (content.selectionStart !== content.selectionEnd) {
-                toolbar.classList.remove("hidden");
-            } else {
-                toolbar.classList.add("hidden");
-            }
-        }
+        let mousePos = { x: 0, y: 0 };
         function hideToolbar() { toolbar.classList.add("hidden"); }
 
-        // 用 selectionchange 监听选区变化（拖选/双击/shift 选都可靠触发）
+        // 把工具栏定位到鼠标位置附近（左对齐鼠标；上方空间不足则显示在下方）
+        function positionToolbar() {
+            const card = toolbar.closest(".relative");
+            const cardRect = card.getBoundingClientRect();
+            const w = toolbar.offsetWidth, h = toolbar.offsetHeight;
+            const left = Math.max(4, Math.min(mousePos.x - cardRect.left, cardRect.width - w - 4));
+            let top = mousePos.y - cardRect.top - h - 10;
+            if (top < 4) top = mousePos.y - cardRect.top + 24; // 上方放不下，放鼠标下方
+            top = Math.max(4, top);
+            toolbar.style.left = left + "px";
+            toolbar.style.top = top + "px";
+        }
+        function showToolbar() {
+            positionToolbar();
+            toolbar.classList.remove("hidden");
+        }
+
+        // 记录鼠标位置并重新定位工具栏（mouseup 晚于 selectionchange，需修正位置）
+        content.addEventListener("mouseup", (e) => {
+            mousePos = { x: e.clientX, y: e.clientY };
+            if (!toolbar.classList.contains("hidden")) positionToolbar();
+        });
+
+        // 选区变化时显示/隐藏工具栏
         document.addEventListener("selectionchange", () => {
             if (content.selectionStart !== content.selectionEnd) {
-                toolbar.classList.remove("hidden");
+                showToolbar();
             } else {
-                toolbar.classList.add("hidden");
+                hideToolbar();
             }
         });
-        // 失焦时隐藏工具栏（点击工具栏按钮不会失焦，因为按钮 mousedown preventDefault）
+
+        // 失焦时隐藏（点工具栏按钮不会失焦，按钮 mousedown preventDefault）
         content.addEventListener("blur", () => {
             setTimeout(() => { if (document.activeElement !== content) hideToolbar(); }, 150);
         });
 
+        // toggle 格式：重复点同一格式 = 取消；加粗/斜体可叠加
+        function applyFormat(fmt) {
+            const start = content.selectionStart, end = content.selectionEnd;
+            if (start === end) return;
+            const text = content.value;
+            const sel = text.slice(start, end);
+            let newText, newStart, newEnd;
+
+            if (fmt === "quote") {
+                const quoted = sel.split("\n").map((l) => "> " + l).join("\n");
+                newText = text.slice(0, start) + quoted + text.slice(end);
+                newStart = start; newEnd = start + quoted.length;
+            } else if (fmt === "link") {
+                newText = text.slice(0, start) + "[" + sel + "](https://)" + text.slice(end);
+                newStart = start + 1; newEnd = start + 1 + sel.length;
+            } else if (fmt === "bold" || fmt === "italic") {
+                // 统计选区前后紧邻的 * 数量，实现加粗/斜体叠加 + toggle
+                let beforeStars = 0;
+                for (let i = start - 1; i >= 0 && text[i] === "*"; i--) beforeStars++;
+                let afterStars = 0;
+                for (let i = end; i < text.length && text[i] === "*"; i++) afterStars++;
+                if (fmt === "bold") {
+                    if (beforeStars >= 2 && afterStars >= 2) {
+                        newText = text.slice(0, start - 2) + sel + text.slice(end + 2);
+                        newStart = start - 2; newEnd = end - 2;
+                    } else {
+                        newText = text.slice(0, start) + "**" + sel + "**" + text.slice(end);
+                        newStart = start + 2; newEnd = end + 2;
+                    }
+                } else {
+                    if (beforeStars % 2 === 1 && afterStars % 2 === 1) {
+                        newText = text.slice(0, start - 1) + sel + text.slice(end + 1);
+                        newStart = start - 1; newEnd = end - 1;
+                    } else {
+                        newText = text.slice(0, start) + "*" + sel + "*" + text.slice(end);
+                        newStart = start + 1; newEnd = end + 1;
+                    }
+                }
+            } else {
+                const [before, after] = fmtMap[fmt];
+                const len = before.length;
+                const wrapped = text.slice(0, start).endsWith(before) && text.slice(end).startsWith(after);
+                if (wrapped) {
+                    newText = text.slice(0, start - len) + sel + text.slice(end + len);
+                    newStart = start - len; newEnd = end - len;
+                } else {
+                    newText = text.slice(0, start) + before + sel + after + text.slice(end);
+                    newStart = start + len; newEnd = end + len;
+                }
+            }
+            content.value = newText;
+            content.focus();
+            content.selectionStart = newStart;
+            content.selectionEnd = newEnd;
+            renderPreview();
+            hideToolbar();
+        }
+
         document.querySelectorAll("#fmt-toolbar [data-fmt]").forEach((btn) => {
             // mousedown 阻止默认，避免点击按钮时 textarea 失焦丢选区
             btn.addEventListener("mousedown", (e) => e.preventDefault());
-            btn.addEventListener("click", () => {
-                const start = content.selectionStart, end = content.selectionEnd;
-                if (start === end) return;
-                const sel = content.value.slice(start, end);
-                const fmt = btn.dataset.fmt;
-                let caretStart, caretEnd;
-                if (fmt === "quote") {
-                    const quoted = sel.split("\n").map((line) => "> " + line).join("\n");
-                    content.value = content.value.slice(0, start) + quoted + content.value.slice(end);
-                    caretStart = start; caretEnd = start + quoted.length;
-                } else if (fmt === "link") {
-                    content.value = content.value.slice(0, start) + "[" + sel + "](https://)" + content.value.slice(end);
-                    caretStart = start + 1; caretEnd = start + 1 + sel.length;
-                } else {
-                    const [before, after] = fmtMap[fmt];
-                    content.value = content.value.slice(0, start) + before + sel + after + content.value.slice(end);
-                    caretStart = start + before.length; caretEnd = start + before.length + sel.length;
-                }
-                content.focus();
-                content.selectionStart = caretStart;
-                content.selectionEnd = caretEnd;
-                renderPreview();
-                hideToolbar();
-            });
+            btn.addEventListener("click", () => applyFormat(btn.dataset.fmt));
         });
 
         // 点击语法按钮 → 插入到正文光标处
