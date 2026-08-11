@@ -245,10 +245,15 @@ const TOKEN_KEY = "zhanblog_admin_token";
         } from "@codemirror/view";
         import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
         import { autocompletion, closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
-        import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
+        import { searchKeymap } from "@codemirror/search";
         import { markdown } from "@codemirror/lang-markdown";
         import { oneDark, oneDarkHighlightStyle } from "@codemirror/theme-one-dark";
         import MarkdownIt from "markdown-it";
+
+        // 写文章页不需要 swup 页面切换动画，禁用避免其干扰编辑器鼠标交互
+        if (window.swup) {
+            try { window.swup.destroy?.(); } catch (e) { /* ignore */ }
+        }
 
         const CFG = { owner: "zhan-zip", repo: "zhan-blog", postsPath: "src/content/posts", api: "https://api.github.com" };
         const TOKEN_KEY = "zhanblog_admin_token";
@@ -294,7 +299,6 @@ const TOKEN_KEY = "zhanblog_admin_token";
                 rectangularSelection(),
                 crosshairCursor(),
                 highlightActiveLine(),
-                highlightSelectionMatches(),
                 keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...searchKeymap, ...historyKeymap, indentWithTab]),
                 markdown(),
                 highlightCompartment.of(syntaxHighlighting(isDark() ? oneDarkHighlightStyle : markdownHighlight)),
