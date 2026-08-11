@@ -250,11 +250,17 @@ const TOKEN_KEY = "zhanblog_admin_token";
                     theme: isDark() ? "pastel-on-dark" : "default",
                     previewTheme: isDark() ? "dark" : "default",
                     editorTheme: isDark() ? "pastel-on-dark" : "default",
-                    toolbarHandlers: {
-                        image: function () {
-                            // 点工具栏图片按钮 → 打开本地文件选择
-                            $("image-input").click();
-                        },
+                    onload: function () {
+                        // 覆盖工具栏图片按钮：改为本地选图（避开默认的 URL 填表弹窗）
+                        jQuery('.editormd-toolbar a').each(function () {
+                            const t = (this.title || '');
+                            if (t.indexOf('图片') !== -1 || t.indexOf('image') !== -1) {
+                                jQuery(this).off('click').on('click', function (e) {
+                                    e.preventDefault();
+                                    document.getElementById('image-input').click();
+                                });
+                            }
+                        });
                     },
                 });
                 bindImageUpload();
