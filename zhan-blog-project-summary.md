@@ -411,4 +411,5 @@ Twikoo（Hugging Face Space）/ GitHub Actions / SMTP（QQ 或 163 邮箱）
 - **bug 修复**：fuwari `markdown.css` 的 `@apply link`（依赖 main.css 的自定义类）导致 **CI/本地构建偶发失败**（部署翻车）→ 去掉 `link`，构建稳定（连续构建通过）
 - **bug 修复**：图片文件名含中文会带来部署/URL 风险 → 上传文件名只保留 ASCII
 - **说明**：图片上传到 GitHub 后，本地预览看不到是正常的（图片在远程、本地无此文件），**线上部署完成（约 2 分钟）后可见**；应在线上 admin 或部署后查看
-- 已推送 commit：图片上传 `987856c`、图片按钮修复 `37913c4`、构建根治 `ea2df2a`、文档 `58d6525`
+- **bug 修复**：**发布按钮在 `<form>` 外**（重构布局时按钮挪到编辑区下方），点击不触发表单提交 → 按钮 `type="button"` + 点击时 `form.requestSubmit()` 手动触发
+- 已推送 commit：图片上传 `987856c`、图片按钮修复 `37913c4`、构建根治 `ea2df2a`、发布按钮修复（待推送）、文档 `58d6525`
