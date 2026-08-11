@@ -72,7 +72,7 @@ const TOKEN_KEY = "zhanblog_admin_token";
             <div class="flex-1 min-w-0">
                 <!-- 顶部：要填的部分 -->
                 <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-6 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm mb-6">
-                    <form id="new-post-form" class="flex flex-col gap-4">
+                    <form id="new-post-form" class="flex flex-col gap-4" novalidate>
                         <div class="flex flex-col gap-2">
                             <label for="np-title" class="transition text-sm font-medium text-75">标题 *</label>
                             <input id="np-title" type="text" required placeholder="文章标题"
@@ -129,6 +129,9 @@ const TOKEN_KEY = "zhanblog_admin_token";
             </div>
         </div>
     </main>
+
+    <!-- 全局顶部提示 toast -->
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 hidden px-6 py-3 rounded-xl text-white font-medium shadow-lg"></div>
 
     <style is:global>
         /* 补全局变量（写文章页用简单布局，缺侧边栏页面的变量注入） */
@@ -207,6 +210,17 @@ const TOKEN_KEY = "zhanblog_admin_token";
             statusEl.classList.toggle("text-red-500", ok === false);
             statusEl.classList.toggle("dark:text-red-400", ok === false);
             if (ok === true) statusEl.classList.remove("text-75");
+        }
+
+        // 屏幕顶部全局提示（表单验证 / 发布状态）
+        let toastTimer;
+        function showToast(msg, ok) {
+            const t = $("toast");
+            t.textContent = msg;
+            t.classList.remove("hidden");
+            t.style.background = ok ? "oklch(0.55 0.21 var(--hue))" : "#dc2626";
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.add("hidden"), 3000);
         }
 
         function utf8ToBase64(str) {
@@ -298,7 +312,12 @@ const TOKEN_KEY = "zhanblog_admin_token";
             const description = $("np-desc").value.trim();
             const body = contentEditor.getMarkdown();
 
-            if (!title || !slug || !body) { setStatus("请填写标题、文件名和正文。", false); return; }
+            if (!title || !slug || !body) {
+                const missing = !title ? "标题" : (!slug ? "文件名" : "正文");
+                setStatus("请填写" + missing + "。", false);
+                showToast("请填写" + missing, false);
+                return;
+            }
 
             let fm = "---\n";
             fm += "title: " + title + "\n";
@@ -335,12 +354,15 @@ const TOKEN_KEY = "zhanblog_admin_token";
                 });
                 const data = await res.json();
                 if (data.content) {
-                    setStatus("已发布！约 2 分钟后线上生效。可继续写下一篇。", true);
+                    setStatus("已提交，正在部署（约 2 分钟后线上生效）。", true);
+                    showToast("已提交，正在部署", true);
                     form.reset();
                     $("np-date").value = new Date().toISOString().slice(0, 10);
                     contentEditor.setMarkdown("");
                 } else {
-                    setStatus("发布失败：" + (data.message || "未知错误"), false);
+                    const errMsg = data.message || "未知错误";
+                    setStatus("发布失败：" + errMsg, false);
+                    showToast("发布失败：" + errMsg, false);
                 }
             } catch (err) {
                 setStatus("发布出错：" + err.message, false);

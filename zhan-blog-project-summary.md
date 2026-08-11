@@ -413,4 +413,6 @@ Twikoo（Hugging Face Space）/ GitHub Actions / SMTP（QQ 或 163 邮箱）
 - **说明**：图片上传到 GitHub 后，本地预览看不到是正常的（图片在远程、本地无此文件），**线上部署完成（约 2 分钟）后可见**；应在线上 admin 或部署后查看
 - **bug 修复**：**发布按钮在 `<form>` 外**（重构布局时按钮挪到编辑区下方），点击不触发表单提交 → 按钮 `type="button"` + 点击时 `form.requestSubmit()` 手动触发
 - **bug 修复**：重复发布同名文章时报 `Invalid request. "sha" wasn't supplied`（GitHub 更新已有文件需带当前版本 sha）→ 发布前先 GET 查文件是否存在，存在则 PUT 带 sha 更新
+- **功能**：表单验证 + 发布状态改为**屏幕顶部 toast 提示**（字段 `novalidate` 禁用原生验证，由 JS 接管；发布成功弹「已提交，正在部署」）
+- **排查**：归档页空白是 **dev Vite 依赖缓存过期（504 Outdated Optimize Dep）**，清 `node_modules/.vite` 重启即恢复；线上为构建产物不受影响
 - 已推送 commit：图片上传 `987856c`、图片按钮修复 `37913c4`、构建根治 `ea2df2a`、发布按钮修复（待推送）、文档 `58d6525`
