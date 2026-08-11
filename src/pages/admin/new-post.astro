@@ -108,12 +108,12 @@ const TOKEN_KEY = "zhanblog_admin_token";
                     </form>
                 </div>
 
-                <!-- 下面：编辑（CodeMirror）+ 预览，左右等高、占地大 -->
+                <!-- 下面：编辑（textarea，原生可靠选择）+ 预览，左右等高 -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm flex flex-col">
-                        <label for="editor" class="transition text-sm font-medium text-75 mb-3">正文（Markdown）*</label>
-                        <div id="editor"
-                             class="transition flex-1 h-[calc(100vh-23rem)] min-h-[520px] overflow-hidden rounded-lg border border-black/25 dark:border-white/25 bg-white dark:bg-[oklch(0.22_0.014_210)]"></div>
+                        <label for="np-content" class="transition text-sm font-medium text-75 mb-3">正文（Markdown）*</label>
+                        <textarea id="np-content" rows="20" required placeholder="在这里用 Markdown 写正文，右侧实时预览…"
+                                  class="transition flex-1 w-full h-[calc(100vh-23rem)] min-h-[520px] px-4 py-3 rounded-lg bg-transparent border border-black/25 dark:border-white/25 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] text-90 resize-none font-mono text-sm leading-relaxed"></textarea>
                     </div>
                     <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm flex flex-col">
                         <div class="flex items-center gap-2 mb-3">
@@ -168,40 +168,6 @@ const TOKEN_KEY = "zhanblog_admin_token";
             --line-color: rgba(255, 255, 255, 0.1);
             --line-divider: rgba(255, 255, 255, 0.08);
         }
-
-        /* CodeMirror 基础样式（亮色用默认，暗色用 oneDark 主题） */
-        .cm-editor {
-            height: 100%;
-            background: #ffffff;
-            border-radius: 0.5rem;
-            color: #1f2937;
-        }
-        .cm-editor.cm-focused { outline: none; }
-        .cm-editor .cm-content {
-            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-            line-height: 1.6;
-        }
-        .cm-editor .cm-gutters {
-            background: #f9fafb;
-            color: #9ca3af;
-            border: none;
-        }
-        .cm-editor .cm-activeLineGutter { background: #f3f4f6; }
-        .cm-editor .cm-activeLine { background: #fafafa; }
-        :root.dark .cm-editor { background: oklch(0.22 0.014 210); color: #e5e7eb; }
-        :root.dark .cm-editor .cm-gutters { background: oklch(0.26 0.014 210); color: #6b7280; }
-        :root.dark .cm-editor .cm-activeLine { background: oklch(0.26 0.014 210); }
-
-        /* CodeMirror 文本选择与光标基础样式（只给 drawSelection 用的类上色，不设原生 ::selection，避免叠加错乱） */
-        .cm-content {
-            -webkit-user-select: text;
-            user-select: text;
-            caret-color: currentColor;
-        }
-        .cm-cursor { border-left: 1.2px solid currentColor; }
-        .cm-selectionBackground { background: rgba(66, 66, 250, 0.18); }
-        .cm-selectionMatch { background: rgba(66, 66, 250, 0.12); }
-        :root.dark .cm-selectionBackground { background: rgba(120, 130, 255, 0.25); }
     </style>
 
     <style>
@@ -228,27 +194,9 @@ const TOKEN_KEY = "zhanblog_admin_token";
     </style>
 
     <script>
-        import { Compartment } from "@codemirror/state";
-        import { HighlightStyle, bracketMatching, indentOnInput, syntaxHighlighting } from "@codemirror/language";
-        import { tags as t } from "@lezer/highlight";
-        import {
-            EditorView,
-            drawSelection,
-            dropCursor,
-            highlightActiveLine,
-            highlightActiveLineGutter,
-            highlightSpecialChars,
-            keymap,
-            lineNumbers,
-        } from "@codemirror/view";
-        import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
-        import { autocompletion, closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
-        import { searchKeymap } from "@codemirror/search";
-        import { markdown } from "@codemirror/lang-markdown";
-        import { oneDark, oneDarkHighlightStyle } from "@codemirror/theme-one-dark";
         import MarkdownIt from "markdown-it";
 
-        // 写文章页不需要 swup 页面切换动画，禁用避免其干扰编辑器鼠标交互
+        // 写文章页不需要 swup 页面切换动画，禁用避免干扰
         if (window.swup) {
             try { window.swup.destroy?.(); } catch (e) { /* ignore */ }
         }
@@ -257,6 +205,7 @@ const TOKEN_KEY = "zhanblog_admin_token";
         const TOKEN_KEY = "zhanblog_admin_token";
         const $ = (id) => document.getElementById(id);
         const form = $("new-post-form");
+        const content = $("np-content");
         const preview = $("preview");
         const wordCount = $("word-count");
         const statusEl = $("np-status");
@@ -264,82 +213,6 @@ const TOKEN_KEY = "zhanblog_admin_token";
 
         // markdown-it 渲染引擎
         const mdEngine = new MarkdownIt({ html: false, linkify: true, breaks: true });
-
-        // 亮色 Markdown 语法高亮样式
-        const markdownHighlight = HighlightStyle.define([
-            { tag: t.heading, color: "#d73a49", fontWeight: "bold" },
-            { tag: t.strong, fontWeight: "bold" },
-            { tag: t.emphasis, fontStyle: "italic" },
-            { tag: t.link, color: "#0366d6", textDecoration: "underline" },
-            { tag: t.url, color: "#0366d6" },
-            { tag: t.monospace, color: "#24292e" },
-            { tag: t.meta, color: "#6a737d" },
-            { tag: t.quote, color: "#6a737d", fontStyle: "italic" },
-            { tag: t.list, color: "#d73a49" },
-        ]);
-
-        // CodeMirror 编辑器
-        const themeCompartment = new Compartment();
-        const highlightCompartment = new Compartment();
-        const isDark = () => document.documentElement.classList.contains("dark");
-        const view = new EditorView({
-            extensions: [
-                lineNumbers(),
-                highlightActiveLineGutter(),
-                highlightSpecialChars(),
-                history(),
-                drawSelection(),
-                dropCursor(),
-                indentOnInput(),
-                bracketMatching(),
-                closeBrackets(),
-                autocompletion(),
-                highlightActiveLine(),
-                keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...searchKeymap, ...historyKeymap, indentWithTab]),
-                markdown(),
-                highlightCompartment.of(syntaxHighlighting(isDark() ? oneDarkHighlightStyle : markdownHighlight)),
-                themeCompartment.of(isDark() ? oneDark : []),
-                EditorView.theme({
-                    "&": { height: "100%", fontSize: "0.875rem" },
-                    ".cm-scroller": { fontFamily: "ui-monospace, SFMono-Regular, Consolas, monospace", lineHeight: "1.6", overflow: "auto" },
-                    ".cm-content": { padding: "0.5rem 0.5rem" },
-                    ".cm-gutters": { border: "none", display: "none" },
-                }),
-                EditorView.updateListener.of((u) => { if (u.docChanged) renderPreview(); }),
-            ],
-            parent: $("editor"),
-        });
-
-        // 跟随主题切换（含语法高亮样式）
-        new MutationObserver(() => {
-            view.dispatch({
-                effects: [
-                    themeCompartment.reconfigure(isDark() ? oneDark : []),
-                    highlightCompartment.reconfigure(syntaxHighlighting(isDark() ? oneDarkHighlightStyle : markdownHighlight)),
-                ],
-            });
-        }).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-
-        function renderPreview() {
-            const text = view.state.doc.toString();
-            wordCount.textContent = text.trim().length + " 字";
-            preview.innerHTML = mdEngine.render(text);
-        }
-
-        // 点击语法按钮 → 插入到光标处
-        function insertAtCursor(text) {
-            text = text.replace(/\\n/g, "\n");
-            const sel = view.state.selection.main;
-            view.dispatch({
-                changes: { from: sel.from, to: sel.to, insert: text },
-                selection: { anchor: sel.from + text.length },
-            });
-            view.focus();
-            renderPreview();
-        }
-        document.querySelectorAll("[data-insert]").forEach((btn) => {
-            btn.addEventListener("click", () => insertAtCursor(btn.dataset.insert || ""));
-        });
 
         // 默认日期
         $("np-date").value = new Date().toISOString().slice(0, 10);
@@ -360,6 +233,27 @@ const TOKEN_KEY = "zhanblog_admin_token";
             return btoa(bin);
         }
 
+        // 实时预览
+        function renderPreview() {
+            const text = content.value;
+            wordCount.textContent = text.trim().length + " 字";
+            preview.innerHTML = mdEngine.render(text);
+        }
+        content.addEventListener("input", renderPreview);
+
+        // 点击语法按钮 → 插入到正文光标处
+        function insertAtCursor(text) {
+            text = text.replace(/\\n/g, "\n");
+            const start = content.selectionStart, end = content.selectionEnd;
+            content.value = content.value.slice(0, start) + text + content.value.slice(end);
+            content.focus();
+            content.selectionStart = content.selectionEnd = start + text.length;
+            renderPreview();
+        }
+        document.querySelectorAll("[data-insert]").forEach((btn) => {
+            btn.addEventListener("click", () => insertAtCursor(btn.dataset.insert || ""));
+        });
+
         // 发布
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
@@ -372,7 +266,7 @@ const TOKEN_KEY = "zhanblog_admin_token";
             const category = $("np-category").value.trim();
             const tags = $("np-tags").value.split(/[,，]/).map((t) => t.trim()).filter(Boolean);
             const description = $("np-desc").value.trim();
-            const body = view.state.doc.toString();
+            const body = content.value;
 
             if (!title || !slug || !body) { setStatus("请填写标题、文件名和正文。", false); return; }
 
