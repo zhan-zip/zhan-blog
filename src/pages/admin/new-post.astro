@@ -9,7 +9,7 @@ const TOKEN_KEY = "zhanblog_admin_token";
 <Layout title="写文章">
     <div class="max-w-[var(--page-width)] mx-auto px-4 md:px-6 py-8">
         <!-- 顶栏 -->
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center justify-between mb-6">
             <a href={url("admin/")}
                class="transition flex items-center gap-1 text-sm font-medium text-[var(--primary)] hover:underline">
                 <Icon name="material-symbols:arrow-back-rounded"></Icon>
@@ -19,74 +19,97 @@ const TOKEN_KEY = "zhanblog_admin_token";
             <div class="w-24"></div>
         </div>
 
-        <!-- 编辑 + 预览 -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- 左：编辑 -->
-            <div class="card-base rounded-[var(--radius-large)] p-6 md:p-7 transition">
-                <form id="new-post-form" class="flex flex-col gap-5">
-                    <div class="flex flex-col gap-2">
-                        <label for="np-title" class="transition text-sm font-medium text-75">标题 *</label>
-                        <input id="np-title" type="text" required placeholder="文章标题"
-                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="flex gap-6 items-start">
+            <!-- 左侧竖向固定：Markdown 快速对照 -->
+            <aside class="hidden lg:block w-56 shrink-0 sticky top-24 self-start max-h-[calc(100vh-9rem)] overflow-y-auto">
+                <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm">
+                    <h3 class="font-bold text-sm text-90 mb-4">Markdown 快速对照</h3>
+                    <ul class="flex flex-col gap-2.5 text-xs text-75 font-mono leading-snug">
+                        <li><span class="text-[var(--primary)] font-bold"># </span>大号标题</li>
+                        <li><span class="text-[var(--primary)] font-bold">## </span>中号标题</li>
+                        <li><span class="text-[var(--primary)] font-bold">### </span>小号标题</li>
+                        <li><span class="text-[var(--primary)] font-bold">**</span>文字**<span class="text-black/40 dark:text-white/40"> 加粗</span></li>
+                        <li><span class="text-[var(--primary)] font-bold">*</span>文字*<span class="text-black/40 dark:text-white/40"> 斜体</span></li>
+                        <li><span class="text-[var(--primary)] font-bold">`</span>代码<span class="text-[var(--primary)] font-bold">`</span><span class="text-black/40 dark:text-white/40"> 行内</span></li>
+                        <li><span class="text-[var(--primary)] font-bold">- </span><span class="text-black/40 dark:text-white/40">无序列表</span></li>
+                        <li><span class="text-[var(--primary)] font-bold">1. </span><span class="text-black/40 dark:text-white/40">有序列表</span></li>
+                        <li><span class="text-[var(--primary)] font-bold">[</span>文字](网址)<span class="text-black/40 dark:text-white/40"> 链接</span></li>
+                        <li><span class="text-[var(--primary)] font-bold">&gt; </span><span class="text-black/40 dark:text-white/40">引用</span></li>
+                        <li><span class="text-[var(--primary)] font-bold">---</span><span class="text-black/40 dark:text-white/40"> 分隔线</span></li>
+                        <li><span class="text-[var(--primary)] font-bold">```</span><span class="text-black/40 dark:text-white/40"> 代码块</span></li>
+                    </ul>
+                    <p class="text-[0.7rem] text-black/40 dark:text-white/40 mt-4 leading-snug">换行<br>用空行分段</p>
+                </div>
+            </aside>
+
+            <!-- 主内容 -->
+            <div class="flex-1 min-w-0">
+                <!-- 顶部：要填的部分 -->
+                <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-6 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm mb-6">
+                    <form id="new-post-form" class="flex flex-col gap-4">
                         <div class="flex flex-col gap-2">
-                            <label for="np-slug" class="transition text-sm font-medium text-75">文件名（英文/拼音）*</label>
-                            <input id="np-slug" type="text" required placeholder="如 my-first-post"
+                            <label for="np-title" class="transition text-sm font-medium text-75">标题 *</label>
+                            <input id="np-title" type="text" required placeholder="文章标题"
                                    class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
                         </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="flex flex-col gap-2">
+                                <label for="np-slug" class="transition text-sm font-medium text-75">文件名 *</label>
+                                <input id="np-slug" type="text" required placeholder="如 my-post"
+                                       class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <label for="np-date" class="transition text-sm font-medium text-75">日期</label>
+                                <input id="np-date" type="date"
+                                       class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <label for="np-category" class="transition text-sm font-medium text-75">分类</label>
+                                <input id="np-category" type="text" placeholder="如 教程"
+                                       class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <label for="np-tags" class="transition text-sm font-medium text-75">标签（逗号分隔）</label>
+                                <input id="np-tags" type="text" placeholder="如 前端, Vue"
+                                       class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                            </div>
+                        </div>
                         <div class="flex flex-col gap-2">
-                            <label for="np-date" class="transition text-sm font-medium text-75">发布日期</label>
-                            <input id="np-date" type="date"
+                            <label for="np-desc" class="transition text-sm font-medium text-75">摘要</label>
+                            <input id="np-desc" type="text" placeholder="一句话摘要（可选）"
                                    class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
                         </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="flex flex-col gap-2">
-                            <label for="np-category" class="transition text-sm font-medium text-75">分类</label>
-                            <input id="np-category" type="text" placeholder="如 教程"
-                                   class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <label for="np-tags" class="transition text-sm font-medium text-75">标签（逗号分隔）</label>
-                            <input id="np-tags" type="text" placeholder="如 前端, Vue"
-                                   class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="np-desc" class="transition text-sm font-medium text-75">摘要</label>
-                        <input id="np-desc" type="text" placeholder="一句话摘要（可选）"
-                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="np-content" class="transition text-sm font-medium text-75">正文（Markdown）*</label>
+                    </form>
+                </div>
+
+                <!-- 下面：编辑 + 预览，左右等高、占地大 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm flex flex-col">
+                        <label for="np-content" class="transition text-sm font-medium text-75 mb-3">正文（Markdown）*</label>
                         <textarea id="np-content" rows="20" required placeholder="在这里用 Markdown 写正文，右侧实时预览…"
-                                  class="transition px-4 py-3 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90 resize-y font-mono text-sm leading-relaxed"></textarea>
+                                  class="transition flex-1 w-full px-4 py-3 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90 resize-none font-mono text-sm leading-relaxed h-[calc(100vh-26rem)] min-h-[480px]"></textarea>
                     </div>
-                </form>
-            </div>
-
-            <!-- 右：实时预览 -->
-            <div class="card-base rounded-[var(--radius-large)] p-6 md:p-7 transition">
-                <div class="flex items-center gap-2 mb-5">
-                    <Icon name="material-symbols:visibility-rounded" class="text-[var(--primary)]"></Icon>
-                    <h2 class="transition font-bold text-lg text-90">预览</h2>
-                    <span id="word-count" class="ml-auto text-xs text-75"></span>
+                    <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm flex flex-col">
+                        <div class="flex items-center gap-2 mb-3">
+                            <Icon name="material-symbols:visibility-rounded" class="text-[var(--primary)]"></Icon>
+                            <h2 class="transition font-bold text-sm text-90">预览</h2>
+                            <span id="word-count" class="ml-auto text-xs text-75"></span>
+                        </div>
+                        <div id="preview"
+                             class="transition flex-1 h-[calc(100vh-26rem)] min-h-[480px] overflow-y-auto prose dark:prose-invert max-w-none text-[0.9rem] leading-relaxed text-75"></div>
+                    </div>
                 </div>
-                <div id="preview"
-                     class="prose dark:prose-invert max-w-none transition text-[0.9rem] leading-relaxed text-75">
+
+                <!-- 发布 -->
+                <div class="mt-6 flex flex-col gap-3">
+                    <button id="np-submit"
+                            class="transition flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-[var(--primary)] text-white dark:text-black/80 font-bold hover:brightness-110 hover:shadow-lg active:scale-95">
+                        <Icon name="material-symbols:upload-rounded"></Icon>
+                        发布文章
+                    </button>
+                    <p id="np-status" class="transition text-sm text-75" role="status" aria-live="polite"></p>
                 </div>
             </div>
-        </div>
-
-        <!-- 发布 -->
-        <div class="mt-6 flex flex-col gap-3">
-            <button id="np-submit"
-                    class="transition flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-[var(--primary)] text-white dark:text-black/80 font-bold hover:brightness-110 active:scale-95">
-                <Icon name="material-symbols:upload-rounded"></Icon>
-                发布文章
-            </button>
-            <p id="np-status" class="transition text-sm text-75" role="status" aria-live="polite"></p>
         </div>
     </div>
 
@@ -169,7 +192,7 @@ const TOKEN_KEY = "zhanblog_admin_token";
                 if (category) fm += "category: " + category + "\n";
                 if (tags.length) fm += "tags: [" + tags.join(", ") + "]\n";
                 fm += "---\n\n";
-                const md = fm + body.trim() + "\n";
+                const mdFile = fm + body.trim() + "\n";
 
                 submitBtn.disabled = true;
                 setStatus("发布中…", undefined);
@@ -177,7 +200,7 @@ const TOKEN_KEY = "zhanblog_admin_token";
                     const res = await fetch(CFG.api + "/repos/" + CFG.owner + "/" + CFG.repo + "/contents/" + CFG.postsPath + "/" + slug + ".md", {
                         method: "PUT",
                         headers: { "Content-Type": "application/json", Authorization: "Bearer " + token, Accept: "application/vnd.github+json" },
-                        body: JSON.stringify({ message: "后台发布文章：" + title, content: utf8ToBase64(md), branch: "main" }),
+                        body: JSON.stringify({ message: "后台发布文章：" + title, content: utf8ToBase64(mdFile), branch: "main" }),
                     });
                     const data = await res.json();
                     if (data.content) {
