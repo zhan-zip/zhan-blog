@@ -80,7 +80,8 @@
 | fuwari | 一键跳 GitHub 按钮、亮暗切换、卡片网格 | — |
 
 **配色**：主色 `#4242FA` 蓝 / 强调 `#E60067` 粉 / 装饰 `#63BCE9` 天蓝 / 暗色用深藏蓝 `#0F172A` 系
-**字体**：中文思源黑体系 + 英文 Inter（近似 Josh 的 Wotfard）+ 代码 JetBrains Mono
+**字体**：中文思源黑体系（PingFang SC / 微软雅黑 / Noto Sans SC 系统栈）+ 英文 Inter + 代码 JetBrains Mono
+**界面语言**：**全中文**（fuwari UI 文案经 i18n 切 `zh_CN`，作者/简介/页脚等硬编码文案改中文；2026-08-11 用户确认）
 **氛围**：圆角卡片 8-12px、轻阴影、克制留白；**不用玻璃拟态**
 
 ### 4.4 评论系统：Twikoo（非 Giscus/Gitalk/Waline）
