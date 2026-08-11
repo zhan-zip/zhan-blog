@@ -192,20 +192,27 @@ Hero：我是谁一句话 + 双 CTA（[联系我] [看我的项目]）
 
 ***
 
-## 八、内容结构（规划）
+## 八、内容结构（已确认，2026-08-11）
+
+基于 fuwari `src/content/config.ts` 的 postsCollection schema 确认，文章 frontmatter 字段如下：
 
 ```
 src/content/posts/hello-world.md
 ---
-title: 文章标题
-published: 2026-08-11
-tags: [教程, 前端]
-description: 一句话摘要
+title: 文章标题        # 必填
+published: 2026-08-11 # 必填，发布日期
+updated: 2026-08-12   # 可选，更新日期
+draft: false          # 可选，草稿（默认 false）
+description: 一句话摘要 # 可选
+image: /images/xxx.png # 可选，封面图路径
+tags: [教程, 前端]      # 可选，标签数组
+category: 分类名        # 可选，分类
+lang: zh              # 可选，语言代码
 ---
 正文 Markdown…
 ```
 
-> 具体 frontmatter 字段以 fuwari 的 content schema 为准，实施时确认后回填本段。
+> 另含 `prevTitle/prevSlug/nextTitle/nextSlug` 四个内部字段（自动生成，无需手动填写）。
 
 ***
 
