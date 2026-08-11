@@ -1,0 +1,95 @@
+---
+import { Icon } from "astro-icon/components";
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+import { profileConfig } from "../config";
+
+// 联系方式（用户补充后修改这里）
+const email = "";
+const channels = profileConfig.links;
+---
+
+<MainGridLayout title="联系">
+    <!-- 标题 -->
+    <section class="onload-animation transition bg-[var(--card-bg)] rounded-[var(--radius-large)] px-6 md:px-10 py-12 md:py-14">
+        <h1 class="transition font-extrabold text-4xl md:text-5xl leading-tight text-90">
+            联系我
+        </h1>
+        <p class="transition text-lg md:text-xl mt-4 text-75 leading-relaxed max-w-[36rem]">
+            有任何想法、问题或合作意向，欢迎通过以下方式找到我。
+        </p>
+    </section>
+
+    <!-- 联系渠道 -->
+    <section class="mt-16">
+        <h2 class="onload-animation transition flex items-center gap-3 font-bold text-2xl md:text-3xl text-90">
+            <span class="w-1.5 h-6 rounded-md bg-[var(--primary)]"></span>
+            联系渠道
+        </h2>
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {email && (
+                <a href={`mailto:${email}`}
+                   class="card-base flex items-center gap-4 rounded-[var(--radius-large)] p-6 transition hover:scale-[1.02] active:scale-[0.98]">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--btn-regular-bg)] text-[var(--primary)]">
+                        <Icon name="material-symbols:mail-rounded" class="text-2xl"></Icon>
+                    </div>
+                    <div>
+                        <div class="transition font-bold text-90">邮箱</div>
+                        <div class="transition text-75 text-sm mt-1">{email}</div>
+                    </div>
+                </a>
+            )}
+            {channels.map((c) => (
+                <a href={c.url} target="_blank" rel="noopener"
+                   class="card-base flex items-center gap-4 rounded-[var(--radius-large)] p-6 transition hover:scale-[1.02] active:scale-[0.98]">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--btn-regular-bg)] text-[var(--primary)]">
+                        <Icon name={c.icon} class="text-2xl"></Icon>
+                    </div>
+                    <div>
+                        <div class="transition font-bold text-90">{c.name}</div>
+                        <div class="transition text-75 text-sm mt-1">{c.url}</div>
+                    </div>
+                </a>
+            ))}
+        </div>
+    </section>
+
+    <!-- 留言表单（占位，M7 接入 GitHub Actions 真实提交） -->
+    <section class="mt-16 md:mt-20">
+        <h2 class="onload-animation transition flex items-center gap-3 font-bold text-2xl md:text-3xl text-90">
+            <span class="w-1.5 h-6 rounded-md bg-[var(--primary)]"></span>
+            给我留言
+        </h2>
+        <div class="mt-8 card-base rounded-[var(--radius-large)] p-6 md:p-8 transition">
+            <form id="contact-form" class="flex flex-col gap-6" onsubmit="return false;">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label for="cf-name" class="transition text-sm font-medium text-75">称呼</label>
+                        <input id="cf-name" name="name" type="text" placeholder="你的称呼"
+                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90"
+                        >
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label for="cf-email" class="transition text-sm font-medium text-75">邮箱（选填）</label>
+                        <input id="cf-email" name="email" type="email" placeholder="用于回复你"
+                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90"
+                        >
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label for="cf-message" class="transition text-sm font-medium text-75">留言内容</label>
+                    <textarea id="cf-message" name="message" rows="5" placeholder="写下你的想法…"
+                              class="transition px-4 py-3 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90 resize-y"
+                    ></textarea>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button type="submit" disabled
+                            class="transition flex items-center gap-2 h-11 px-6 rounded-lg bg-[var(--btn-regular-bg)] text-[var(--btn-content)] font-medium cursor-not-allowed">
+                        <Icon name="material-symbols:send-rounded"></Icon>
+                        提交功能即将上线
+                    </button>
+                    <p class="transition text-sm text-75">留言提交功能正在开发中，可通过上方渠道直接联系。</p>
+                </div>
+            </form>
+        </div>
+    </section>
+</MainGridLayout>

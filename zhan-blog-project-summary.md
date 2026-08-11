@@ -107,10 +107,9 @@ zhan-blog/
 ├── src/
 │   ├── content/                    ← 🟢 用户编辑区（Markdown）
 │   │   ├── posts/                  ←   每篇文章一个 .md
-│   │   ├── projects/               ←   项目展示数据
-│   │   ├── services.md             ←   服务页内容
-│   │   └── about.md                ←   关于页内容
-│   ├── pages/                      ← 路由页面（index/posts/projects/services/about/contact）
+│   │   ├── projects/               ←   项目展示数据（.md，frontmatter 见第八节）
+│   │   └── spec/about.md           ←   关于页内容
+│   ├── pages/                      ← 路由页面（index/projects/services/about/contact/archive/posts）
 │   ├── components/                 ← 可复用组件
 │   ├── layouts/                    ← 页面骨架模板
 │   └── styles/                     ← 样式（配色/字体变量）
@@ -214,6 +213,23 @@ lang: zh              # 可选，语言代码
 ```
 
 > 另含 `prevTitle/prevSlug/nextTitle/nextSlug` 四个内部字段（自动生成，无需手动填写）。
+
+项目数据（`src/content/projects/*.md`）：
+
+```yaml
+---
+title: 项目名称        # 必填
+description: 一句话描述  # 可选
+image: /images/xxx.png # 可选，封面图路径
+tech: [Astro, Vue]     # 可选，技术栈数组
+url: https://...       # 可选，在线访问链接
+github: https://...    # 可选，GitHub 仓库链接
+status: 建设中          # 可选，状态标签
+featured: true         # 可选，是否出现在首页「精选项目」
+---
+```
+
+> 服务页当前为代码内硬编码（`src/pages/services.astro`），后续可改为 content 驱动。
 
 ***
 

@@ -43,7 +43,19 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
+		{
+			name: "项目",
+			url: "/projects/",
+		},
+		{
+			name: "服务",
+			url: "/services/",
+		},
 		LinkPreset.About,
+		{
+			name: "联系",
+			url: "/contact/",
+		},
 		{
 			name: "GitHub",
 			url: "https://github.com/zhan-zip", // Internal links should not include the base path, as it is automatically added
