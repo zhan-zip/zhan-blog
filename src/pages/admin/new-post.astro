@@ -191,6 +191,16 @@ const TOKEN_KEY = "zhanblog_admin_token";
         :root.dark .cm-editor { background: oklch(0.22 0.014 210); color: #e5e7eb; }
         :root.dark .cm-editor .cm-gutters { background: oklch(0.26 0.014 210); color: #6b7280; }
         :root.dark .cm-editor .cm-activeLine { background: oklch(0.26 0.014 210); }
+
+        /* CodeMirror 文本选择与光标基础样式 */
+        .cm-content {
+            -webkit-user-select: text;
+            user-select: text;
+            caret-color: currentColor;
+        }
+        .cm-cursor { border-left: 1.2px solid currentColor; }
+        .cm-selectionBackground, .cm-content ::selection { background: rgba(66, 66, 250, 0.18); }
+        .cm-selectionMatch { background: rgba(66, 66, 250, 0.12); }
     </style>
 
     <style>
@@ -266,9 +276,9 @@ const TOKEN_KEY = "zhanblog_admin_token";
                     ".cm-content": { padding: "0.75rem 1rem" },
                     ".cm-gutters": { border: "none" },
                 }),
+                EditorView.updateListener.of((u) => { if (u.docChanged) renderPreview(); }),
             ],
             parent: $("editor"),
-            updateListener: (u) => { if (u.docChanged) renderPreview(); },
         });
 
         // 跟随主题切换（含语法高亮样式）
