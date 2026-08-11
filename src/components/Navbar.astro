@@ -52,7 +52,7 @@ if (!activeUrl) {
     <div class:list={[
         className,
         "card-base !overflow-visible max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto flex items-center justify-between px-4"]}>
-        <a href={url('/')} class="btn-plain scale-animation rounded-lg h-[3.25rem] px-5 font-bold active:scale-95">
+        <a href={url('/')} data-nav-item class="btn-plain scale-animation rounded-lg h-[3.25rem] px-5 font-bold active:scale-95">
             <div class="flex flex-row text-[var(--primary)] items-center text-md">
                 <Icon name="material-symbols:home-outline-rounded" class="text-[1.75rem] mb-1 mr-2" />
                 {siteConfig.title}
@@ -61,7 +61,7 @@ if (!activeUrl) {
         <div class="hidden md:flex">
             {links.map((l) => {
                 const isActive = !l.external && activeUrl === l.url;
-                return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
+                return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null} data-nav-item
                           class:list={["btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95", { "nav-active": isActive }]}
                 >
                     <div class="flex items-center">
@@ -137,6 +137,36 @@ function loadButtonScript() {
 }
 
 loadButtonScript();
+
+// 页面切换后实时更新导航选中态（swup SPA 导航不重新渲染，需 JS 同步）
+function updateActiveNav() {
+    const normalize = (p) => {
+        let s = p;
+        if (!s.startsWith("/")) s = "/" + s;
+        if (!s.endsWith("/")) s += "/";
+        return s;
+    };
+    const rel = normalize(window.location.pathname);
+    const base = normalize(import.meta.env.BASE_URL || "/");
+    document.querySelectorAll("[data-nav-item]").forEach((a) => {
+        const href = a.getAttribute("href");
+        if (!href || href.startsWith("http")) return;
+        const target = normalize(new URL(href, window.location.origin).pathname);
+        // 根路径（首页/Logo）只精确匹配，不参与子路径匹配
+        const isRoot = target === base || target === "/";
+        const isActive = rel === target || (!isRoot && rel.startsWith(target));
+        a.classList.toggle("nav-active", isActive);
+    });
+}
+updateActiveNav();
+if (window.swup) {
+    try { window.swup.hooks.on("page:view", updateActiveNav); } catch (e) {}
+}
+// 兜底：swup 切换内容时实时更新选中态（观察 body，切换后必触发）
+try {
+    const navObserver = new MutationObserver(() => updateActiveNav());
+    navObserver.observe(document.body, { childList: true, subtree: true });
+} catch (e) {}
 </script>
 
 {import.meta.env.PROD && <script is:inline define:vars={{scriptUrl: url('/pagefind/pagefind.js')}}>
