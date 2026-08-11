@@ -108,30 +108,10 @@ const TOKEN_KEY = "zhanblog_admin_token";
                     </form>
                 </div>
 
-                <!-- 下面：编辑（textarea，原生可靠选择）+ 预览，左右等高 -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="relative rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm flex flex-col">
-                        <label for="np-content" class="transition text-sm font-medium text-75 mb-3">正文（Markdown）*</label>
-                        <!-- 选中文字后弹出的浮动格式工具栏（跟随鼠标） -->
-                        <div id="fmt-toolbar" class="hidden absolute z-10 flex items-center gap-1 p-1.5 rounded-lg bg-[var(--btn-regular-bg)] border border-black/10 dark:border-white/15 shadow-md">
-                            <button type="button" data-fmt="bold" title="加粗" class="fmt-btn"><Icon name="material-symbols:format-bold-rounded"></Icon></button>
-                            <button type="button" data-fmt="italic" title="斜体" class="fmt-btn"><Icon name="material-symbols:format-italic-rounded"></Icon></button>
-                            <button type="button" data-fmt="strike" title="删除线" class="fmt-btn"><Icon name="material-symbols:format-strikethrough-rounded"></Icon></button>
-                            <button type="button" data-fmt="code" title="行内代码" class="fmt-btn"><Icon name="material-symbols:code-rounded"></Icon></button>
-                            <button type="button" data-fmt="quote" title="引用" class="fmt-btn"><Icon name="material-symbols:format-quote-rounded"></Icon></button>
-                            <button type="button" data-fmt="link" title="链接" class="fmt-btn"><Icon name="material-symbols:link-rounded"></Icon></button>
-                        </div>
-                        <textarea id="np-content" rows="20" required placeholder="在这里用 Markdown 写正文，右侧实时预览…"
-                                  class="transition flex-1 w-full h-[calc(100vh-23rem)] min-h-[520px] px-4 py-3 rounded-lg bg-transparent border border-black/25 dark:border-white/25 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] text-90 resize-none font-mono text-sm leading-relaxed"></textarea>
-                    </div>
-                    <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm flex flex-col">
-                        <div class="flex items-center gap-2 mb-3">
-                            <Icon name="material-symbols:visibility-rounded" class="text-[var(--primary)]"></Icon>
-                            <h2 class="transition font-bold text-sm text-90">预览</h2>
-                            <span id="word-count" class="ml-auto text-xs text-75"></span>
-                        </div>
-                        <div id="preview"
-                             class="transition flex-1 h-[calc(100vh-23rem)] min-h-[520px] overflow-y-auto prose dark:prose-invert max-w-none text-[0.9rem] leading-relaxed text-75"></div>
+                <!-- Editor.md 富文本编辑器（自带工具栏 + 分屏实时预览） -->
+                <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-2 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm">
+                    <div id="md-content" style="z-index: 1;">
+                        <textarea id="np-content" style="display:none;"></textarea>
                     </div>
                 </div>
 
@@ -200,31 +180,9 @@ const TOKEN_KEY = "zhanblog_admin_token";
         .insert-btn:active {
             transform: scale(0.95);
         }
-        .fmt-btn {
-            transition: all 0.15s ease;
-            width: 2rem;
-            height: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.5rem;
-            color: var(--btn-content);
-            cursor: pointer;
-            border: none;
-            background: transparent;
-        }
-        .fmt-btn:hover {
-            background: var(--btn-regular-bg-hover);
-            color: var(--primary);
-        }
-        .fmt-btn:active {
-            transform: scale(0.9);
-        }
     </style>
 
     <script>
-        import MarkdownIt from "markdown-it";
-
         // 写文章页不需要 swup 页面切换动画，禁用避免干扰
         if (window.swup) {
             try { window.swup.destroy?.(); } catch (e) { /* ignore */ }
@@ -232,19 +190,13 @@ const TOKEN_KEY = "zhanblog_admin_token";
 
         const CFG = { owner: "zhan-zip", repo: "zhan-blog", postsPath: "src/content/posts", api: "https://api.github.com" };
         const TOKEN_KEY = "zhanblog_admin_token";
+        const BASE = import.meta.env.BASE_URL;
         const $ = (id) => document.getElementById(id);
         const form = $("new-post-form");
-        const content = $("np-content");
-        const preview = $("preview");
-        const wordCount = $("word-count");
         const statusEl = $("np-status");
         const submitBtn = $("np-submit");
-
-        // markdown-it 渲染引擎
-        const mdEngine = new MarkdownIt({ html: false, linkify: true, breaks: true });
-
-        // 默认日期
-        $("np-date").value = new Date().toISOString().slice(0, 10);
+        let contentEditor = null;
+        const isDark = () => document.documentElement.classList.contains("dark");
 
         function setStatus(text, ok) {
             statusEl.textContent = text;
@@ -262,157 +214,66 @@ const TOKEN_KEY = "zhanblog_admin_token";
             return btoa(bin);
         }
 
-        // 实时预览
-        function renderPreview() {
-            const text = content.value;
-            wordCount.textContent = text.trim().length + " 字";
-            preview.innerHTML = mdEngine.render(text);
-        }
-        content.addEventListener("input", renderPreview);
-
-        // 选中文字后显示格式工具栏，点击给选中文字包裹 Markdown 语法
-        const toolbar = $("fmt-toolbar");
-        const fmtMap = {
-            bold: ["**", "**"],
-            italic: ["*", "*"],
-            strike: ["~~", "~~"],
-            code: ["`", "`"],
-        };
-
-        let mousePos = { x: 0, y: 0 };
-        function hideToolbar() { toolbar.classList.add("hidden"); }
-
-        // 工具栏中心对齐鼠标，显示在鼠标正上方（上方放不下则显示在下方）
-        function positionToolbar() {
-            const card = toolbar.closest(".relative");
-            const cardRect = card.getBoundingClientRect();
-            const w = toolbar.offsetWidth, h = toolbar.offsetHeight;
-            let left = mousePos.x - cardRect.left - w / 2;
-            left = Math.max(4, Math.min(left, cardRect.width - w - 4));
-            let top = mousePos.y - cardRect.top - h - 10;
-            if (top < 4) top = mousePos.y - cardRect.top + 24; // 上方放不下，放鼠标下方
-            top = Math.max(4, top);
-            toolbar.style.left = left + "px";
-            toolbar.style.top = top + "px";
-        }
-        function showToolbar() {
-            positionToolbar();
-            toolbar.classList.remove("hidden");
-        }
-
-        // 记录鼠标位置并重新定位工具栏（mouseup 晚于 selectionchange，需修正位置）
-        content.addEventListener("mouseup", (e) => {
-            mousePos = { x: e.clientX, y: e.clientY };
-            if (!toolbar.classList.contains("hidden")) positionToolbar();
-        });
-
-        // 选区变化时显示/隐藏工具栏
-        document.addEventListener("selectionchange", () => {
-            if (content.selectionStart !== content.selectionEnd) {
-                showToolbar();
-            } else {
-                hideToolbar();
-            }
-        });
-
-        // 失焦时隐藏（点工具栏按钮不会失焦，按钮 mousedown preventDefault）
-        content.addEventListener("blur", () => {
-            setTimeout(() => { if (document.activeElement !== content) hideToolbar(); }, 150);
-        });
-
-        // 清理选中文本内部的 Markdown 标记（*、#、~、` 等），再重新格式化，避免嵌套错乱
-        function stripMarkdown(input) {
-            return input
-                .replace(/\*\*(.+?)\*\*/g, "$1")
-                .replace(/\*(.+?)\*/g, "$1")
-                .replace(/~~(.+?)~~/g, "$1")
-                .replace(/`(.+?)`/g, "$1")
-                .replace(/^\s*#+\s*/gm, "")
-                .replace(/^\s*>\s*/gm, "");
-        }
-
-        // toggle 格式：重复点同一格式 = 取消；加粗/斜体可叠加；先清理内部标记再包格式
-        function applyFormat(fmt) {
-            const start = content.selectionStart, end = content.selectionEnd;
-            if (start === end) return;
-            const text = content.value;
-            const sel = stripMarkdown(text.slice(start, end));
-            let newText, newStart, newEnd;
-
-            if (fmt === "quote") {
-                const quoted = sel.split("\n").map((l) => "> " + l).join("\n");
-                newText = text.slice(0, start) + quoted + text.slice(end);
-                newStart = start; newEnd = start + quoted.length;
-            } else if (fmt === "link") {
-                newText = text.slice(0, start) + "[" + sel + "](https://)" + text.slice(end);
-                newStart = start + 1; newEnd = start + 1 + sel.length;
-            } else if (fmt === "bold" || fmt === "italic") {
-                // 统计选区前后紧邻的 * 数量，实现加粗/斜体叠加 + toggle
-                let beforeStars = 0;
-                for (let i = start - 1; i >= 0 && text[i] === "*"; i--) beforeStars++;
-                let afterStars = 0;
-                for (let i = end; i < text.length && text[i] === "*"; i++) afterStars++;
-                if (fmt === "bold") {
-                    if (beforeStars >= 2 && afterStars >= 2) {
-                        newText = text.slice(0, start - 2) + sel + text.slice(end + 2);
-                        newStart = start - 2; newEnd = end - 2;
-                    } else {
-                        newText = text.slice(0, start) + "**" + sel + "**" + text.slice(end);
-                        newStart = start + 2; newEnd = end + 2;
-                    }
+        // 动态加载脚本 / 样式
+        function loadAsset(src, isCss) {
+            return new Promise((resolve, reject) => {
+                if (isCss) {
+                    const l = document.createElement("link");
+                    l.rel = "stylesheet"; l.href = src;
+                    l.onload = resolve; l.onerror = reject;
+                    document.head.appendChild(l);
                 } else {
-                    if (beforeStars % 2 === 1 && afterStars % 2 === 1) {
-                        newText = text.slice(0, start - 1) + sel + text.slice(end + 1);
-                        newStart = start - 1; newEnd = end - 1;
-                    } else {
-                        newText = text.slice(0, start) + "*" + sel + "*" + text.slice(end);
-                        newStart = start + 1; newEnd = end + 1;
-                    }
+                    const s = document.createElement("script");
+                    s.src = src; s.onload = resolve; s.onerror = reject;
+                    document.head.appendChild(s);
                 }
-            } else {
-                const [before, after] = fmtMap[fmt];
-                const len = before.length;
-                const wrapped = text.slice(0, start).endsWith(before) && text.slice(end).startsWith(after);
-                if (wrapped) {
-                    newText = text.slice(0, start - len) + sel + text.slice(end + len);
-                    newStart = start - len; newEnd = end - len;
-                } else {
-                    newText = text.slice(0, start) + before + sel + after + text.slice(end);
-                    newStart = start + len; newEnd = end + len;
-                }
-            }
-            content.value = newText;
-            content.focus();
-            content.selectionStart = newStart;
-            content.selectionEnd = newEnd;
-            renderPreview();
-            hideToolbar();
+            });
         }
 
-        document.querySelectorAll("#fmt-toolbar [data-fmt]").forEach((btn) => {
-            // mousedown 阻止默认，避免点击按钮时 textarea 失焦丢选区
-            btn.addEventListener("mousedown", (e) => e.preventDefault());
-            btn.addEventListener("click", () => applyFormat(btn.dataset.fmt));
-        });
+        // 加载 jQuery + Editor.md 并初始化
+        async function initEditor() {
+            try {
+                await loadAsset("https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js");
+                await loadAsset(BASE + "lib/editormd/css/editormd.min.css", true);
+                await loadAsset(BASE + "lib/editormd/editormd.min.js");
+                if (!window.editormd) { setStatus("编辑器加载失败，请刷新重试。", false); return; }
+                contentEditor = window.editormd("md-content", {
+                    width: "100%",
+                    height: "620px",
+                    syncScrolling: "single",
+                    path: BASE + "lib/editormd/lib/",
+                    markdown: "",
+                    watch: true,
+                    toolbarIcons: "full",
+                    theme: isDark() ? "pastel-on-dark" : "default",
+                    previewTheme: isDark() ? "dark" : "default",
+                    editorTheme: isDark() ? "pastel-on-dark" : "default",
+                });
+            } catch (e) {
+                setStatus("编辑器加载出错：" + e.message, false);
+            }
+        }
 
-        // 点击语法按钮 → 插入到正文光标处
+        // 语法对照栏点击 → 插入到编辑器光标处
         function insertAtCursor(text) {
             text = text.replace(/\\n/g, "\n");
-            const start = content.selectionStart, end = content.selectionEnd;
-            content.value = content.value.slice(0, start) + text + content.value.slice(end);
-            content.focus();
-            content.selectionStart = content.selectionEnd = start + text.length;
-            renderPreview();
+            if (contentEditor) {
+                contentEditor.insertValue(text);
+            }
         }
         document.querySelectorAll("[data-insert]").forEach((btn) => {
             btn.addEventListener("click", () => insertAtCursor(btn.dataset.insert || ""));
         });
+
+        // 默认日期
+        $("np-date").value = new Date().toISOString().slice(0, 10);
 
         // 发布
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
             const token = localStorage.getItem(TOKEN_KEY);
             if (!token) { setStatus("未配置 GitHub 令牌，请先到后台「GitHub 连接」保存令牌。", false); return; }
+            if (!contentEditor) { setStatus("编辑器尚未加载完成，请稍等。", false); return; }
 
             const title = $("np-title").value.trim();
             const slug = $("np-slug").value.trim();
@@ -420,7 +281,7 @@ const TOKEN_KEY = "zhanblog_admin_token";
             const category = $("np-category").value.trim();
             const tags = $("np-tags").value.split(/[,，]/).map((t) => t.trim()).filter(Boolean);
             const description = $("np-desc").value.trim();
-            const body = content.value;
+            const body = contentEditor.getMarkdown();
 
             if (!title || !slug || !body) { setStatus("请填写标题、文件名和正文。", false); return; }
 
@@ -446,7 +307,7 @@ const TOKEN_KEY = "zhanblog_admin_token";
                     setStatus("已发布！约 2 分钟后线上生效。可继续写下一篇。", true);
                     form.reset();
                     $("np-date").value = new Date().toISOString().slice(0, 10);
-                    renderPreview();
+                    contentEditor.setMarkdown("");
                 } else {
                     setStatus("发布失败：" + (data.message || "未知错误"), false);
                 }
@@ -461,5 +322,7 @@ const TOKEN_KEY = "zhanblog_admin_token";
         if (!localStorage.getItem(TOKEN_KEY)) {
             setStatus("提示：尚未配置 GitHub 令牌，发布前请先到后台「GitHub 连接」保存令牌。", false);
         }
+
+        initEditor();
     </script>
 </Layout>
