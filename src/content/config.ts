@@ -20,7 +20,8 @@ const postsCollection = defineCollection({
 	}),
 });
 const specCollection = defineCollection({
-	schema: z.object({}),
+	// passthrough 保留任意 frontmatter 字段（首页/服务/联系页内容）
+	schema: z.object({}).passthrough(),
 });
 const projectsCollection = defineCollection({
 	schema: z.object({

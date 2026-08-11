@@ -1,7 +1,12 @@
 ---
+import { getEntry } from "astro:content";
 import { Icon } from "astro-icon/components";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 import { profileConfig } from "../config";
+
+// 联系页文案（编辑 src/content/spec/contact.md）
+const contactPost = await getEntry("spec", "contact");
+const { title, subtitle } = contactPost.data;
 
 // 联系方式（用户补充后修改这里）
 const email = "2899893413@qq.com";
@@ -18,10 +23,10 @@ const WEB3FORMS_ACCESS_KEY = "41755341-b071-4157-802a-c8900ef81f27";
     <!-- 标题 -->
     <section class="onload-animation transition bg-[var(--card-bg)] rounded-[var(--radius-large)] px-6 md:px-10 py-12 md:py-14">
         <h1 class="transition font-extrabold text-4xl md:text-5xl leading-tight text-90">
-            联系我
+            {title}
         </h1>
         <p class="transition text-lg md:text-xl mt-4 text-75 leading-relaxed max-w-[36rem]">
-            有任何想法、问题或合作意向，欢迎通过以下方式找到我。
+            {subtitle}
         </p>
     </section>
 

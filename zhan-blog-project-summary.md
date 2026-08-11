@@ -133,7 +133,7 @@ zhan-blog/
 │   ├── content/                    ← 🟢 用户编辑区（Markdown）
 │   │   ├── posts/                  ←   每篇文章一个 .md
 │   │   ├── projects/               ←   项目展示数据（.md，frontmatter 见第八节）
-│   │   └── spec/about.md           ←   关于页内容
+│   │   └── spec/                   ←   页面内容（about 关于 / home 首页 Hero / services 服务 / contact 联系文案）
 │   ├── pages/                      ← 路由页面（index/projects/services/about/contact/archive/posts/admin）
 │   ├── components/                 ← 可复用组件
 │   ├── layouts/                    ← 页面骨架模板
