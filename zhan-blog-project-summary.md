@@ -90,9 +90,14 @@
 * **暂缓 Waline**：功能全但默认 Vercel 域名被污染，必须绑自定义域名，现阶段无域名
 * **选定 Twikoo**：匿名、免费、配置简单，后端可部署 Hugging Face Space
 
-### 4.5 联系表单：GitHub Actions（非 Formspree）
+### 4.5 联系表单：Web3Forms（2026-08-11 调整，原 GitHub Actions 方案因「前端无法安全触发 Actions」放弃）
 
-Formspree 免费版国内访问可能不稳。GitHub Actions 完全免费、不翻墙、无第三方依赖，还能顺带维护订阅列表。
+访客表单 → Web3Forms（免费 250 次/月）→ 直发博主邮箱（2899893413@qq.com）。
+
+- 前端 JS 直接 POST `api.web3forms.com/submit`，`access_key` 公开安全（等同邮箱别名，可放前端）
+- **弃 GitHub Actions 原因**：前端安全持有 token 才能触发 `repository_dispatch`，token 暴露即泄露，不可行
+- 备选：mailto 组装（访客自己发）作为国内访问不可用时的兜底
+- 邮件订阅：暂未实现，后续需要时再单独设计
 
 ***
 
@@ -168,11 +173,13 @@ Hero：我是谁一句话 + 双 CTA（[联系我] [看我的项目]）
 * fuwari 支持 Twikoo 评论组件；前端指向 Hugging Face 部署的服务器地址
 * **`SECURE_DOMAINS` 必须配置 `zhan-zip.github.io`**（以及未来自定义域名），否则前端请求 403
 
-### 6.5 联系表单 + 订阅（GitHub Actions）
+### 6.5 联系表单（Web3Forms）
 
-* 表单 POST → workflow → SMTP 发邮件到博主邮箱
-* 订阅 POST → workflow → 追加邮箱到订阅列表文件 + 可选欢迎邮件
-* 注意：Action 是**异步**处理，前端需处理「提交中 / 成功 / 失败」三态反馈
+* 表单 POST `api.web3forms.com/submit` → 直发博主邮箱（2899893413@qq.com）
+* `access_key` 存前端（公开安全），无需后端 / 密钥 / SMTP
+* 前端「提交中 / 成功 / 失败」三态反馈 + `botcheck` 蜜罐防垃圾
+* 联系渠道卡片：邮箱支持「写信（mailto）」+「一键复制」
+* 邮件订阅：暂未实现，后续需要时再设计
 
 ### 6.6 交互效果清单（用户要"不纯文字"）
 
