@@ -83,6 +83,11 @@ export const licenseConfig: LicenseConfig = {
 	url: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
 };
 
+export const commentConfig = {
+	enable: false, // 部署 Twikoo 后端后改为 true
+	envId: "", // Twikoo 后端地址（Zeabur 域名），如 https://xxx.zeabur.app
+};
+
 export const expressiveCodeConfig: ExpressiveCodeConfig = {
 	// Note: Some styles (such as background color) are being overridden, see the astro.config.mjs file.
 	// Please select a dark theme, as this blog theme currently only supports dark background color

@@ -88,7 +88,8 @@
 
 * **弃用 Giscus/Gitalk**：需访客登录 GitHub，国内访客被挡在门外
 * **暂缓 Waline**：功能全但默认 Vercel 域名被污染，必须绑自定义域名，现阶段无域名
-* **选定 Twikoo**：匿名、免费、配置简单，后端可部署 Hugging Face Space
+* **选定 Twikoo**：匿名、免费、配置简单
+* **后端部署：Zeabur（2026-08-11 用户选定）** —— 用 fork 的 `zhan-zip/twikoo-zeabur` 仓库部署，需配 MongoDB（否则重启丢数据）；弃 Hugging Face（需另注册 MongoDB Atlas 且邮件通知被屏蔽）、弃 Railway（国内访问较慢）
 
 ### 4.5 联系表单：Web3Forms（2026-08-11 调整，原 GitHub Actions 方案因「前端无法安全触发 Actions」放弃）
 
@@ -170,8 +171,10 @@ Hero：我是谁一句话 + 双 CTA（[联系我] [看我的项目]）
 
 ### 6.4 评论（Twikoo）
 
-* fuwari 支持 Twikoo 评论组件；前端指向 Hugging Face 部署的服务器地址
-* **`SECURE_DOMAINS` 必须配置 `zhan-zip.github.io`**（以及未来自定义域名），否则前端请求 403
+* 前端：文章页 `[...slug].astro` 已加 Twikoo 评论区（`config.ts` 的 `commentConfig` 控制 enable/envId）
+* 后端：Zeabur 部署（fork 仓库 `zhan-zip/twikoo-zeabur`），配 MongoDB，绑定 `*.zeabur.app` 域名
+* 前端 `commentConfig.envId` = Zeabur 域名（如 `https://xxx.zeabur.app`），填好后 `enable: true`
+* 后台管理：评论区右下角齿轮设置管理密码，可管理评论/反垃圾/邮件通知
 
 ### 6.5 联系表单（Web3Forms）
 
