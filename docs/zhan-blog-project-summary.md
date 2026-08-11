@@ -394,7 +394,7 @@ Twikoo（Hugging Face Space）/ GitHub Actions / SMTP（QQ 或 163 邮箱）
 - **配色**：黑白分明 + 蓝青 hue210（用户多次反馈迭代）
 - **项目内容**：从 TreaWork 收集食光记/QQ机器人/灵感笔记，写入 projects collection；邮箱 2899893413@qq.com
 - **表单**：Web3Forms 接入（access_key 41755341...）
-- **无后端后台**：/admin + GitHub PAT（ghp_1Bu...，30 天到期 2026-09-10）
+- **无后端后台**：/admin + GitHub PAT（明文仅存本地 `docs/令牌备忘.local.md`，30 天到期 2026-09-10）
 
 ### 2026-08-12 第二轮：统计 + 写文章页编辑器（重点迭代）
 - **统计**：Umami Cloud（GitHub 一键注册），脚本接入，共享仪表盘 iframe 嵌入后台
@@ -422,4 +422,33 @@ Twikoo（Hugging Face Space）/ GitHub Actions / SMTP（QQ 或 163 邮箱）
 - **bug 修复**：food-time.md 文件开头被误加 `<br />`（在 frontmatter `---` 之前），**破坏 frontmatter 格式导致项目不显示**（Astro 内容文件必须从 `---` 开始）→ 去掉开头的多余内容修复。⚠️ 编辑 `.md` 内容文件时不要动 frontmatter 前面（`---` 必须在文件第一行）
 - **功能**：项目卡片**悬浮效果改纯 CSS**（抬升 translateY + 阴影 + 主色边框，`!important` 保证亮/暗主题均生效；原 Tailwind hover 类在部分环境不生效）；曾尝试 hover 变暗（已按用户要求移除，只保留悬浮）
 - **功能**：项目详情页 `/projects/[slug]/`（标题/状态/技术栈/链接/正文），卡片点击进入
-- 已推送 commit：图片上传 `987856c`、图片按钮修复 `37913c4`、构建根治 `ea2df2a`、发布按钮修复（待推送）、文档 `58d6525`
+- 已推送 commit：图片上传 `987856c`、图片按钮修复 `37913c4`、构建根治 `ea2df2a`、发布按钮修复 `bd2391b`、文档 `58d6525`
+
+***
+
+## 十四、项目须知（重要，务必了解）
+
+### 内容编辑须知
+- 所有文档（交接文档/实施计划/内容编辑指南/提交脚本）都在 **`docs/`** 文件夹
+- `.md` 内容文件（文章/项目/关于等）**frontmatter（`---`）必须在文件第一行**，前面不要加任何内容（`<br/>`/换行都不行），否则该内容不显示
+- 后台 `/admin/` 编辑发布 = 直写 GitHub 远程 → **线上先更新（约 2 分钟部署）**；**本地要 `git pull`** 才同步
+- 本地改文件 = 本地先看到（dev 刷新/热更新）；双击 **`docs/提交上线.bat`** 一键 push 上线
+
+### 令牌与安全
+- 后台令牌（PAT）：`ghp_***`（明文仅存本地 `docs/令牌备忘.local.md`，已 gitignore 不入库），**30 天过期（2026-09-10）**，过期需重建（方法见 `docs/内容编辑指南.md`）；令牌只存自己浏览器，**绝不入库/公开**
+- Web3Forms access_key：`41755341-b071-4157-802a-c8900ef81f27`（公开安全，可放前端）
+
+### 构建与部署
+- push main 自动部署 GitHub Pages（约 2 分钟）；**CDN 缓存**导致线上更新延迟 1-3 分钟，属正常
+- 图片上传到 `public/images/`，上传后等部署才可见；文件名自动转 ASCII
+- 构建曾偶发失败（fuwari `markdown.css` 的 `@apply link`，已根治）；若再遇，重跑 `pnpm build` 或清 `node_modules/.vite`
+
+### 环境
+- dev server：`pnpm dev --host 0.0.0.0`（端口 4321，IPv4/IPv6 都监听）
+- 依赖装卸多了会触发 **Vite 缓存过期（504 Outdated Optimize Dep）** → 页面空白/组件不渲染 → **删 `node_modules/.vite` 重启 dev**
+- 写文章页的 Editor.md 需联网加载 jQuery（CDN）
+
+### 当前状态
+- 评论暂缓（等预算上腾讯云 6.9 元/月）；表单 Web3Forms；统计 Umami（API 需 Pro，用 iframe 嵌入后台）
+- 写文章页：Editor.md 富文本编辑器 + 本地图片上传 + 编辑/删除已有文章
+- 项目页：卡片悬浮效果 + 项目详情页

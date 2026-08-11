@@ -39,9 +39,11 @@ src/pages/            # 路由页面（代码区）
 
 **编辑分工**：`src/content/` 与 `public/` 归内容作者直接编辑；其余代码按需由 Claude Code 维护。
 
-## 相关文档
+## 相关文档（docs/ 下）
 
-- [zhan-blog-project-summary.md](./zhan-blog-project-summary.md) —— 项目交接文档（定位 / 架构 / 设计决策）
-- [实施计划.md](./实施计划.md) —— 里程碑实施计划
+- [zhan-blog-project-summary.md](./docs/zhan-blog-project-summary.md) —— 项目交接文档（定位 / 架构 / 设计决策 / 项目须知）
+- [实施计划.md](./docs/实施计划.md) —— 里程碑实施计划
+- [内容编辑指南.md](./docs/内容编辑指南.md) —— 写文章 / 改内容 / 换头像操作说明
+- [提交上线.bat](./docs/提交上线.bat) —— 一键提交上线脚本（双击运行）
 
 > 基于 fuwari（MIT License）改造。

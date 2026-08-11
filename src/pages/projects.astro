@@ -21,11 +21,11 @@ const projects = await getCollection("projects");
 
     {projects.length > 0 ? (
         <section class="mt-20">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 project-grid group">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {projects.map((project, i) => (
                     <ProjectCard
                         project={project}
-                        class="project-card onload-animation group-hover:opacity-40 hover:!opacity-100"
+                        class="onload-animation"
                         style={`animation-delay: calc(var(--content-delay) + ${i * 80}ms);`}
                     ></ProjectCard>
                 ))}

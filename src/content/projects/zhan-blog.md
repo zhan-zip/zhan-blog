@@ -4,6 +4,6 @@ description: 基于 Astro 的个人技术博客，含评论、离线搜索、联
 tech: [Astro, Tailwind CSS, GitHub Pages]
 url: https://zhan-zip.github.io/zhan-blog
 github: https://github.com/zhan-zip/zhan-blog
-status: 建设中
+status: 正在建设中
 featured: false
 ---
