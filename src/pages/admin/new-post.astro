@@ -23,22 +23,48 @@ const TOKEN_KEY = "zhanblog_admin_token";
             <!-- 左侧竖向固定：Markdown 快速对照 -->
             <aside class="hidden lg:block w-56 shrink-0 sticky top-24 self-start max-h-[calc(100vh-9rem)] overflow-y-auto">
                 <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm">
-                    <h3 class="font-bold text-sm text-90 mb-4">Markdown 快速对照</h3>
-                    <ul class="flex flex-col gap-2.5 text-xs text-75 font-mono leading-snug">
-                        <li><span class="text-[var(--primary)] font-bold"># </span>大号标题</li>
-                        <li><span class="text-[var(--primary)] font-bold">## </span>中号标题</li>
-                        <li><span class="text-[var(--primary)] font-bold">### </span>小号标题</li>
-                        <li><span class="text-[var(--primary)] font-bold">**</span>文字**<span class="text-black/40 dark:text-white/40"> 加粗</span></li>
-                        <li><span class="text-[var(--primary)] font-bold">*</span>文字*<span class="text-black/40 dark:text-white/40"> 斜体</span></li>
-                        <li><span class="text-[var(--primary)] font-bold">`</span>代码<span class="text-[var(--primary)] font-bold">`</span><span class="text-black/40 dark:text-white/40"> 行内</span></li>
-                        <li><span class="text-[var(--primary)] font-bold">- </span><span class="text-black/40 dark:text-white/40">无序列表</span></li>
-                        <li><span class="text-[var(--primary)] font-bold">1. </span><span class="text-black/40 dark:text-white/40">有序列表</span></li>
-                        <li><span class="text-[var(--primary)] font-bold">[</span>文字](网址)<span class="text-black/40 dark:text-white/40"> 链接</span></li>
-                        <li><span class="text-[var(--primary)] font-bold">&gt; </span><span class="text-black/40 dark:text-white/40">引用</span></li>
-                        <li><span class="text-[var(--primary)] font-bold">---</span><span class="text-black/40 dark:text-white/40"> 分隔线</span></li>
-                        <li><span class="text-[var(--primary)] font-bold">```</span><span class="text-black/40 dark:text-white/40"> 代码块</span></li>
-                    </ul>
-                    <p class="text-[0.7rem] text-black/40 dark:text-white/40 mt-4 leading-snug">换行<br>用空行分段</p>
+                    <h3 class="font-bold text-sm text-90 mb-1">Markdown 快速对照</h3>
+                    <p class="text-[0.7rem] text-50 mb-4">点击语法，插入到正文光标处</p>
+
+                    <div class="flex flex-col gap-4">
+                        <div>
+                            <p class="text-[0.7rem] font-bold text-50 mb-2">标题</p>
+                            <div class="flex flex-col gap-1.5">
+                                <button type="button" data-insert="# 大号标题" class="insert-btn"># 大号</button>
+                                <button type="button" data-insert="## 中号标题" class="insert-btn">## 中号</button>
+                                <button type="button" data-insert="### 小号标题" class="insert-btn">### 小号</button>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-[0.7rem] font-bold text-50 mb-2">文字样式</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <button type="button" data-insert="**加粗文字**" class="insert-btn">加粗</button>
+                                <button type="button" data-insert="*斜体文字*" class="insert-btn">斜体</button>
+                                <button type="button" data-insert="`行内代码`" class="insert-btn">代码</button>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-[0.7rem] font-bold text-50 mb-2">列表 / 引用</p>
+                            <div class="flex flex-col gap-1.5">
+                                <button type="button" data-insert="- 无序列表项" class="insert-btn">- 无序列表</button>
+                                <button type="button" data-insert="1. 有序列表项" class="insert-btn">1. 有序列表</button>
+                                <button type="button" data-insert="> 引用文字" class="insert-btn">&gt; 引用</button>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-[0.7rem] font-bold text-50 mb-2">链接 / 分隔</p>
+                            <div class="flex flex-col gap-1.5">
+                                <button type="button" data-insert="[文字说明](https://)" class="insert-btn">链接</button>
+                                <button type="button" data-insert="\n---\n" class="insert-btn">--- 分隔线</button>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-[0.7rem] font-bold text-50 mb-2">代码块</p>
+                            <div class="flex flex-col gap-1.5">
+                                <button type="button" data-insert="```\n代码写在这里\n```" class="insert-btn">``` 代码块</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </aside>
 
@@ -113,6 +139,29 @@ const TOKEN_KEY = "zhanblog_admin_token";
         </div>
     </div>
 
+    <style>
+        .insert-btn {
+            transition: all 0.15s ease;
+            font-size: 0.75rem;
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            text-align: left;
+            padding: 0.4rem 0.625rem;
+            border-radius: 0.5rem;
+            background: var(--btn-regular-bg);
+            color: var(--btn-content);
+            border: 1px solid var(--line-color);
+            cursor: pointer;
+        }
+        .insert-btn:hover {
+            color: var(--primary);
+            background: var(--btn-regular-bg-hover);
+            border-color: var(--primary);
+        }
+        .insert-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+
     <script is:inline>
         (function () {
             const CFG = { owner: "zhan-zip", repo: "zhan-blog", postsPath: "src/content/posts", api: "https://api.github.com" };
@@ -168,6 +217,22 @@ const TOKEN_KEY = "zhanblog_admin_token";
             document.head.appendChild(mdScript);
 
             content.addEventListener("input", renderPreview);
+
+            // 点击语法按钮 → 插入到正文光标处
+            function insertAtCursor(text) {
+                text = text.replace(/\\n/g, "\n");
+                const start = content.selectionStart, end = content.selectionEnd;
+                content.value = content.value.slice(0, start) + text + content.value.slice(end);
+                content.focus();
+                const pos = start + text.length;
+                content.selectionStart = content.selectionEnd = pos;
+                renderPreview();
+            }
+            document.querySelectorAll("[data-insert]").forEach((btn) => {
+                btn.addEventListener("click", function () {
+                    insertAtCursor(btn.dataset.insert || "");
+                });
+            });
 
             // 发布
             form.addEventListener("submit", async function (e) {
