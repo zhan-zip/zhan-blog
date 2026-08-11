@@ -91,6 +91,25 @@
 * **选定 Twikoo**：匿名、免费、配置简单
 * **后端部署：Zeabur（2026-08-11 用户选定）** —— 用 fork 的 `zhan-zip/twikoo-zeabur` 仓库部署，需配 MongoDB（否则重启丢数据）；弃 Hugging Face（需另注册 MongoDB Atlas 且邮件通知被屏蔽）、弃 Railway（国内访问较慢）
 
+### 4.6 评论部署平台调研（2026-08-11，选型留档，供以后参考）
+
+Twikoo 后端部署平台逐一调研结论：
+
+| 平台 | 结论 |
+|------|------|
+| **Hugging Face Space** | Twikoo 官方支持（Docker `FROM imaegoo/twikoo`，配 MongoDB）。免费。**但无邮件通知**（HF 屏蔽 Twikoo 邮件端口）；需注册 HF + MongoDB Atlas，2026-08-11 实测本机 QQ 邮箱收不到 HF 验证邮件，账号拿不回，卡住 |
+| **Zeabur** | 国内友好，Twikoo 官方模板一键部署（含 MongoDB），有邮件通知；**基础订阅 $5/月**（14 天免费试用后） |
+| **腾讯云 CloudBase** | 国内节点快、有邮件通知、功能全；**基础版 6.9 元/月**，需实名 + 手机验证 |
+| **Railway** | Twikoo 官方支持，免费额度（约 $5/月内）不扣费，有邮件通知；**需绑银行卡**，国内访问可能慢 |
+| **LeanCloud 国内版 + Valine** | 免费开发版，但**需已备案域名 + 独立 IP（约 ¥50/月）**，2026 已公告停服风险 |
+| **LeanCloud 国际版 + Valine** | 免费、匿名、无需备案；**已停止新账号注册**（2026-08-11 实测） |
+| **Giscus / utterances** | 免费无后端，但**访客必须登录 GitHub**，国内访客大多没有，弃用 |
+
+**结论**：免费、国内可用、无需绑卡、能注册的评论方案在 2026-08 **基本不存在**。评论功能**暂缓**，等有预算（腾讯云 6.9 元/月）或新平台出现后再接。
+前端评论组件已就绪：文章页已接入 Twikoo（`config.ts` 的 `commentConfig`），届时只需填 `envId` + `enable: true`。
+
+> 参考来源：Twikoo 官方部署文档（HF/腾讯云/Railway）、LeanCloud 官方公告。
+
 ### 4.5 联系表单：Web3Forms（2026-08-11 调整，原 GitHub Actions 方案因「前端无法安全触发 Actions」放弃）
 
 访客表单 → Web3Forms（免费 250 次/月）→ 直发博主邮箱（2899893413@qq.com）。
