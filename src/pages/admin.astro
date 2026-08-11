@@ -168,21 +168,56 @@ const POSTS_PATH = "src/content/posts";
                     listEl.innerHTML = "";
                     items.sort((a, b) => (a.name < b.name ? 1 : -1));
                     items.forEach((f) => {
+                        const slug = f.name.replace(".md", "");
                         const li = document.createElement("li");
                         li.className = "flex items-center justify-between gap-4 px-4 py-2.5 rounded-lg bg-[var(--btn-regular-bg)]";
                         const name = document.createElement("span");
                         name.className = "transition text-sm text-90 truncate";
                         name.textContent = f.name;
-                        const link = document.createElement("a");
-                        link.className = "transition shrink-0 text-sm font-medium text-[var(--primary)] hover:underline";
-                        link.textContent = "查看";
-                        link.href = "/zhan-blog/posts/" + f.name.replace(".md", "") + "/";
-                        link.target = "_blank";
-                        li.append(name, link);
+                        const actions = document.createElement("div");
+                        actions.className = "flex items-center gap-3 shrink-0";
+                        const view = document.createElement("a");
+                        view.className = "transition text-sm font-medium text-[var(--primary)] hover:underline";
+                        view.textContent = "查看";
+                        view.href = "/zhan-blog/posts/" + slug + "/";
+                        view.target = "_blank";
+                        const edit = document.createElement("a");
+                        edit.className = "transition text-sm font-medium text-[var(--primary)] hover:underline";
+                        edit.textContent = "编辑";
+                        edit.href = "/zhan-blog/admin/new-post/?edit=" + slug;
+                        const del = document.createElement("button");
+                        del.className = "transition text-sm font-medium text-red-500 hover:underline";
+                        del.textContent = "删除";
+                        del.addEventListener("click", () => deletePost(slug, f.sha, f.name));
+                        actions.append(view, edit, del);
+                        li.append(name, actions);
                         listEl.appendChild(li);
                     });
                 } catch (e) {
                     listEl.textContent = "加载失败：" + e.message;
+                }
+            }
+
+            // 删除文章（Contents API DELETE，需 sha）
+            async function deletePost(slug, sha, fname) {
+                const title = fname.replace(".md", "");
+                if (!confirm("确定删除文章「" + title + "」吗？删除后不可恢复。")) return;
+                const token = localStorage.getItem(TOKEN_KEY);
+                try {
+                    const res = await fetch(CFG.api + "/repos/" + CFG.owner + "/" + CFG.repo + "/contents/" + CFG.postsPath + "/" + slug + ".md", {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token, Accept: "application/vnd.github+json" },
+                        body: JSON.stringify({ message: "删除文章：" + title, sha: sha, branch: "main" }),
+                    });
+                    const data = await res.json();
+                    if (data.commit) {
+                        alert("已删除「" + title + "」");
+                        loadPosts();
+                    } else {
+                        alert("删除失败：" + (data.message || "未知错误"));
+                    }
+                } catch (e) {
+                    alert("删除出错：" + e.message);
                 }
             }
 

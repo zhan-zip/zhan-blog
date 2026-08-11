@@ -265,6 +265,11 @@ const TOKEN_KEY = "zhanblog_admin_token";
                     previewTheme: isDark() ? "dark" : "default",
                     editorTheme: isDark() ? "pastel-on-dark" : "default",
                     onload: function () {
+                        // 编辑模式：等编辑器就绪后填入待编辑的正文
+                        if (window.__pendingBody) {
+                            this.setMarkdown(window.__pendingBody);
+                            window.__pendingBody = null;
+                        }
                         // 覆盖工具栏图片按钮：改为本地选图（避开默认的 URL 填表弹窗）
                         jQuery('.editormd-toolbar a').each(function () {
                             const t = (this.title || '');
@@ -418,6 +423,70 @@ const TOKEN_KEY = "zhanblog_admin_token";
 
         // 发布按钮在表单外，点击时手动触发表单提交
         $("np-submit").addEventListener("click", () => form.requestSubmit());
+
+        // base64 解码为 UTF-8
+        function base64ToUtf8(b64) {
+            const bin = atob(b64);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            return new TextDecoder().decode(bytes);
+        }
+        // 解析 Markdown 的 frontmatter + 正文
+        function parseMd(md) {
+            const m = md.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+            const data = {};
+            if (m) {
+                m[1].split("\n").forEach((line) => {
+                    const kv = line.match(/^(\w+):\s*(.*)$/);
+                    if (kv) {
+                        let v = kv[2].trim();
+                        if (v.startsWith("[") && v.endsWith("]")) {
+                            v = v.slice(1, -1).split(",").map((s) => s.trim());
+                        } else {
+                            v = v.replace(/^["']|["']$/g, "");
+                        }
+                        data[kv[1]] = v;
+                    }
+                });
+                data.__body = m[2].trim();
+            } else {
+                data.__body = md;
+            }
+            return data;
+        }
+
+        // 编辑模式：加载已有文章内容填入表单和编辑器
+        const editSlug = new URLSearchParams(window.location.search).get("edit");
+        if (editSlug) {
+            $("np-title").placeholder = "编辑模式";
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (token) {
+                (async () => {
+                    try {
+                        const res = await fetch(CFG.api + "/repos/" + CFG.owner + "/" + CFG.repo + "/contents/" + CFG.postsPath + "/" + editSlug + ".md", {
+                            headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" },
+                        });
+                        const data = await res.json();
+                        if (data.content) {
+                            const meta = parseMd(base64ToUtf8(data.content));
+                            $("np-title").value = meta.title || "";
+                            $("np-slug").value = editSlug;
+                            $("np-date").value = (meta.published || "").slice(0, 10);
+                            $("np-category").value = meta.category || "";
+                            const tags = Array.isArray(meta.tags) ? meta.tags : String(meta.tags || "").replace(/^\[|\]$/g, "").split(",").map((t) => t.trim()).filter(Boolean);
+                            $("np-tags").value = tags.join(", ");
+                            $("np-desc").value = meta.description || "";
+                            const body = meta.__body || "";
+                            if (contentEditor) {
+                                contentEditor.setMarkdown(body);
+                            } else {
+                                window.__pendingBody = body;
+                            }
+                        }
+                    } catch (e) { /* 加载失败忽略 */ }
+                })();
+            }
+        }
 
         initEditor();
     </script>
