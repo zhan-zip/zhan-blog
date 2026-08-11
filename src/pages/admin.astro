@@ -56,6 +56,21 @@ const POSTS_PATH = "src/content/posts";
         </div>
     </section>
 
+    <!-- 数据统计（Umami 共享仪表盘） -->
+    <section class="mt-12">
+        <h2 class="onload-animation transition flex items-center gap-3 font-bold text-2xl md:text-3xl text-90">
+            <span class="w-1.5 h-6 rounded-md bg-[var(--primary)]"></span>
+            数据统计
+        </h2>
+        <div class="mt-6 card-base rounded-[var(--radius-large)] p-2 md:p-3 transition">
+            <iframe src="https://cloud.umami.is/share/CTzVRIgXe4jtM1i8"
+                    title="网站访问统计"
+                    class="w-full border-0 rounded-xl"
+                    style="height: 700px;"
+                    loading="lazy"></iframe>
+        </div>
+    </section>
+
     <!-- 文章管理 -->
     <section id="post-manager" class="mt-12 hidden">
         <div class="flex items-center justify-between">

@@ -215,6 +215,8 @@ Hero：我是谁一句话 + 双 CTA（[联系我] [看我的项目]）
 - **脚本**：`<script defer src="https://cloud.umami.is/script.js" data-website-id="d550f252-7127-439a-b72e-b32a42f4baa1">` 已加在 `Layout.astro` head
 - **国内访问实测**：script.js 200（~1.5s），页面访问已成功上报（gateway.umami.is/api/send）
 - **管理后台**：cloud.umami.is（GitHub 登录），看访客/来源/页面/设备等
+- **伪后台集成**：Umami 共享仪表盘已 iframe 嵌入 `/admin/` 的「数据统计」区块（Share URL `https://cloud.umami.is/share/CTzVRIgXe4jtM1i8`，免费版可用）
+- ⚠️ Umami Cloud **API 访问需 Pro 计划**（免费版不开放 API），故无法用 API 拉数到后台，改用 iframe 共享链接
 - 注意：Hobby 免费版仅 1 个网站、6 个月数据保留
 
 ***
