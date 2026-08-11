@@ -8,12 +8,12 @@ import type {
 import { LinkPreset } from "./types/config";
 
 export const siteConfig: SiteConfig = {
-	title: "Zhan-Blog",
-	subtitle: "记录 · 教程 · 接单",
+	title: "zhan-Blog",
+	subtitle: "一盏的博客",
 	lang: "zh_CN", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
 	themeColor: {
-		hue: 240, // 主色 #4242FA 蓝色系
-		fixed: false, // Hide the theme color picker for visitors
+		hue: 225, // 主色：蓝色为主、夹杂亮青色
+		fixed: true, // 固定品牌主题色，访客不可调
 	},
 	banner: {
 		enable: false,
@@ -54,8 +54,8 @@ export const navBarConfig: NavBarConfig = {
 
 export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/demo-avatar.png", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
-	name: "Zhan",
-	bio: "记录项目经历，分享开发教程，欢迎咨询合作。",
+	name: "zhan · 一盏",
+	bio: "一个用于分享开发教程，记录项目经历的个人博客，接单合作暂未开放。",
 	links: [
 		{
 			name: "GitHub",
