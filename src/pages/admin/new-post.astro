@@ -233,7 +233,6 @@ const TOKEN_KEY = "zhanblog_admin_token";
         import { tags as t } from "@lezer/highlight";
         import {
             EditorView,
-            crosshairCursor,
             drawSelection,
             dropCursor,
             highlightActiveLine,
@@ -241,7 +240,6 @@ const TOKEN_KEY = "zhanblog_admin_token";
             highlightSpecialChars,
             keymap,
             lineNumbers,
-            rectangularSelection,
         } from "@codemirror/view";
         import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
         import { autocompletion, closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
@@ -296,8 +294,6 @@ const TOKEN_KEY = "zhanblog_admin_token";
                 bracketMatching(),
                 closeBrackets(),
                 autocompletion(),
-                rectangularSelection(),
-                crosshairCursor(),
                 highlightActiveLine(),
                 keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...searchKeymap, ...historyKeymap, indentWithTab]),
                 markdown(),
