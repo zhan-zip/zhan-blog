@@ -275,6 +275,7 @@ featured: true         # 可选，是否出现在首页「精选项目」
 ### 内容管理后台（2026-08-11 新增）
 
 - 地址：`/zhan-blog/admin/`，无后端，纯 GitHub Contents API
+- 写文章在独立页 `/admin/new-post/`（无侧边栏，Markdown 实时预览，用 markdown-it CDN）
 - 博主在**自己浏览器**填一次 GitHub PAT（classic，`repo` scope，只存 localStorage 不入库），即可在页面写文章 → 直接提交 `src/content/posts/*.md` 到 main → 自动部署
 - ⚠️ 曾试 OAuth device flow：GitHub 授权端点不支持浏览器 CORS，无法纯前端换 token，故用 PAT
 - ⚠️ 安全：PAT 有 `repo` 权限，绝不写入源码/仓库；泄露则去 GitHub 撤销

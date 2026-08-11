@@ -1,0 +1,204 @@
+---
+import { Icon } from "astro-icon/components";
+import Layout from "../../layouts/Layout.astro";
+import { url } from "../../utils/url-utils";
+
+const TOKEN_KEY = "zhanblog_admin_token";
+---
+
+<Layout title="写文章">
+    <div class="max-w-[var(--page-width)] mx-auto px-4 md:px-6 py-8">
+        <!-- 顶栏 -->
+        <div class="flex items-center justify-between mb-8">
+            <a href={url("admin/")}
+               class="transition flex items-center gap-1 text-sm font-medium text-[var(--primary)] hover:underline">
+                <Icon name="material-symbols:arrow-back-rounded"></Icon>
+                返回后台
+            </a>
+            <h1 class="transition font-bold text-2xl md:text-3xl text-90">写文章</h1>
+            <div class="w-24"></div>
+        </div>
+
+        <!-- 编辑 + 预览 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- 左：编辑 -->
+            <div class="card-base rounded-[var(--radius-large)] p-6 md:p-7 transition">
+                <form id="new-post-form" class="flex flex-col gap-5">
+                    <div class="flex flex-col gap-2">
+                        <label for="np-title" class="transition text-sm font-medium text-75">标题 *</label>
+                        <input id="np-title" type="text" required placeholder="文章标题"
+                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="flex flex-col gap-2">
+                            <label for="np-slug" class="transition text-sm font-medium text-75">文件名（英文/拼音）*</label>
+                            <input id="np-slug" type="text" required placeholder="如 my-first-post"
+                                   class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label for="np-date" class="transition text-sm font-medium text-75">发布日期</label>
+                            <input id="np-date" type="date"
+                                   class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="flex flex-col gap-2">
+                            <label for="np-category" class="transition text-sm font-medium text-75">分类</label>
+                            <input id="np-category" type="text" placeholder="如 教程"
+                                   class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label for="np-tags" class="transition text-sm font-medium text-75">标签（逗号分隔）</label>
+                            <input id="np-tags" type="text" placeholder="如 前端, Vue"
+                                   class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label for="np-desc" class="transition text-sm font-medium text-75">摘要</label>
+                        <input id="np-desc" type="text" placeholder="一句话摘要（可选）"
+                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label for="np-content" class="transition text-sm font-medium text-75">正文（Markdown）*</label>
+                        <textarea id="np-content" rows="20" required placeholder="在这里用 Markdown 写正文，右侧实时预览…"
+                                  class="transition px-4 py-3 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90 resize-y font-mono text-sm leading-relaxed"></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 右：实时预览 -->
+            <div class="card-base rounded-[var(--radius-large)] p-6 md:p-7 transition">
+                <div class="flex items-center gap-2 mb-5">
+                    <Icon name="material-symbols:visibility-rounded" class="text-[var(--primary)]"></Icon>
+                    <h2 class="transition font-bold text-lg text-90">预览</h2>
+                    <span id="word-count" class="ml-auto text-xs text-75"></span>
+                </div>
+                <div id="preview"
+                     class="prose dark:prose-invert max-w-none transition text-[0.9rem] leading-relaxed text-75">
+                </div>
+            </div>
+        </div>
+
+        <!-- 发布 -->
+        <div class="mt-6 flex flex-col gap-3">
+            <button id="np-submit"
+                    class="transition flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-[var(--primary)] text-white dark:text-black/80 font-bold hover:brightness-110 active:scale-95">
+                <Icon name="material-symbols:upload-rounded"></Icon>
+                发布文章
+            </button>
+            <p id="np-status" class="transition text-sm text-75" role="status" aria-live="polite"></p>
+        </div>
+    </div>
+
+    <script is:inline>
+        (function () {
+            const CFG = { owner: "zhan-zip", repo: "zhan-blog", postsPath: "src/content/posts", api: "https://api.github.com" };
+            const TOKEN_KEY = "zhanblog_admin_token";
+            const $ = (id) => document.getElementById(id);
+            const form = $("new-post-form");
+            const content = $("np-content");
+            const preview = $("preview");
+            const wordCount = $("word-count");
+            const statusEl = $("np-status");
+            const submitBtn = $("np-submit");
+
+            // 默认日期
+            $("np-date").value = new Date().toISOString().slice(0, 10);
+
+            function setStatus(text, ok) {
+                statusEl.textContent = text;
+                statusEl.classList.toggle("text-emerald-600", ok === true);
+                statusEl.classList.toggle("dark:text-emerald-400", ok === true);
+                statusEl.classList.toggle("text-red-500", ok === false);
+                statusEl.classList.toggle("dark:text-red-400", ok === false);
+                if (ok === true) statusEl.classList.remove("text-75");
+            }
+
+            function utf8ToBase64(str) {
+                const bytes = new TextEncoder().encode(str);
+                let bin = "";
+                bytes.forEach((b) => (bin += String.fromCharCode(b)));
+                return btoa(bin);
+            }
+
+            // 加载 markdown-it（用于实时预览）
+            let md = null;
+            function renderPreview() {
+                const text = content.value;
+                wordCount.textContent = text.trim().length + " 字";
+                if (md) {
+                    preview.innerHTML = md.render(text);
+                } else {
+                    preview.textContent = text;
+                }
+            }
+
+            // 加载 markdown-it CDN
+            const mdScript = document.createElement("script");
+            mdScript.src = "https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js";
+            mdScript.onload = function () {
+                if (window.markdownit) {
+                    md = window.markdownit({ html: false, linkify: true, breaks: true });
+                    renderPreview();
+                }
+            };
+            document.head.appendChild(mdScript);
+
+            content.addEventListener("input", renderPreview);
+
+            // 发布
+            form.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const token = localStorage.getItem(TOKEN_KEY);
+                if (!token) { setStatus("未配置 GitHub 令牌，请先到后台「GitHub 连接」保存令牌。", false); return; }
+
+                const title = $("np-title").value.trim();
+                const slug = $("np-slug").value.trim();
+                const published = $("np-date").value || new Date().toISOString().slice(0, 10);
+                const category = $("np-category").value.trim();
+                const tags = $("np-tags").value.split(/[,，]/).map((t) => t.trim()).filter(Boolean);
+                const description = $("np-desc").value.trim();
+                const body = content.value;
+
+                if (!title || !slug || !body) { setStatus("请填写标题、文件名和正文。", false); return; }
+
+                let fm = "---\n";
+                fm += "title: " + title + "\n";
+                fm += "published: " + published + "\n";
+                if (description) fm += "description: " + description + "\n";
+                if (category) fm += "category: " + category + "\n";
+                if (tags.length) fm += "tags: [" + tags.join(", ") + "]\n";
+                fm += "---\n\n";
+                const md = fm + body.trim() + "\n";
+
+                submitBtn.disabled = true;
+                setStatus("发布中…", undefined);
+                try {
+                    const res = await fetch(CFG.api + "/repos/" + CFG.owner + "/" + CFG.repo + "/contents/" + CFG.postsPath + "/" + slug + ".md", {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token, Accept: "application/vnd.github+json" },
+                        body: JSON.stringify({ message: "后台发布文章：" + title, content: utf8ToBase64(md), branch: "main" }),
+                    });
+                    const data = await res.json();
+                    if (data.content) {
+                        setStatus("已发布！约 2 分钟后线上生效。可继续写下一篇。", true);
+                        form.reset();
+                        $("np-date").value = new Date().toISOString().slice(0, 10);
+                        renderPreview();
+                    } else {
+                        setStatus("发布失败：" + (data.message || "未知错误"), false);
+                    }
+                } catch (err) {
+                    setStatus("发布出错：" + err.message, false);
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            });
+
+            // 未连接时提示
+            if (!localStorage.getItem(TOKEN_KEY)) {
+                setStatus("提示：尚未配置 GitHub 令牌，发布前请先到后台「GitHub 连接」保存令牌。", false);
+            }
+        })();
+    </script>
+</Layout>

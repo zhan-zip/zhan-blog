@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
+import { url } from "../utils/url-utils";
 
 // 后台配置
 const OWNER = "zhan-zip";
@@ -88,56 +89,13 @@ const POSTS_PATH = "src/content/posts";
                 新建文章
             </h2>
         </div>
-        <div class="mt-6 card-base rounded-[var(--radius-large)] p-6 md:p-8 transition">
-            <form id="new-post-form" class="flex flex-col gap-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="flex flex-col gap-2">
-                        <label for="np-title" class="transition text-sm font-medium text-75">标题 *</label>
-                        <input id="np-title" name="title" type="text" required placeholder="文章标题"
-                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="np-slug" class="transition text-sm font-medium text-75">文件名（英文/拼音，用于网址）*</label>
-                        <input id="np-slug" name="slug" type="text" required placeholder="如 my-first-post"
-                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="flex flex-col gap-2">
-                        <label for="np-date" class="transition text-sm font-medium text-75">发布日期</label>
-                        <input id="np-date" name="published" type="date"
-                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="np-category" class="transition text-sm font-medium text-75">分类</label>
-                        <input id="np-category" name="category" type="text" placeholder="如 教程"
-                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="np-tags" class="transition text-sm font-medium text-75">标签（逗号分隔）</label>
-                        <input id="np-tags" name="tags" type="text" placeholder="如 前端, Vue"
-                               class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
-                    </div>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label for="np-desc" class="transition text-sm font-medium text-75">摘要</label>
-                    <input id="np-desc" name="description" type="text" placeholder="一句话摘要（可选）"
-                           class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label for="np-content" class="transition text-sm font-medium text-75">正文（Markdown）*</label>
-                    <textarea id="np-content" name="content" rows="12" required placeholder="用 Markdown 写正文…"
-                              class="transition px-4 py-3 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90 resize-y font-mono text-sm"></textarea>
-                </div>
-                <div class="flex flex-col gap-3">
-                    <button type="submit" id="np-submit"
-                            class="transition flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-[var(--primary)] text-white dark:text-black/80 font-bold hover:brightness-110 active:scale-95">
-                        <Icon name="material-symbols:upload-rounded"></Icon>
-                        发布文章
-                    </button>
-                    <p id="np-status" class="transition text-sm text-75" role="status" aria-live="polite"></p>
-                </div>
-            </form>
+        <div class="mt-6 card-base rounded-[var(--radius-large)] p-8 transition flex flex-col items-center text-center">
+            <p class="transition text-75">写文章请在独立编辑页操作（支持 Markdown 实时预览）。</p>
+            <a href={url("admin/new-post/")}
+               class="transition flex items-center justify-center gap-2 mt-6 h-12 px-8 rounded-xl bg-[var(--primary)] text-white dark:text-black/80 font-bold hover:brightness-110 active:scale-95">
+                <Icon name="material-symbols:edit-rounded"></Icon>
+                去写文章
+            </a>
         </div>
     </section>
 
@@ -250,65 +208,11 @@ const POSTS_PATH = "src/content/posts";
                 if (e.key === "Enter") $("save-token").click();
             });
 
-            // 新建文章
-            $("new-post-form").addEventListener("submit", async function (e) {
-                e.preventDefault();
-                const token = localStorage.getItem(TOKEN_KEY);
-                const statusEl = $("np-status");
-                const submitBtn = $("np-submit");
-                const title = $("np-title").value.trim();
-                const slug = $("np-slug").value.trim();
-                const published = $("np-date").value || new Date().toISOString().slice(0, 10);
-                const category = $("np-category").value.trim();
-                const tags = $("np-tags").value.split(/[,，]/).map((t) => t.trim()).filter(Boolean);
-                const description = $("np-desc").value.trim();
-                const content = $("np-content").value;
-
-                if (!title || !slug || !content) { setStatus(statusEl, "请填写标题、文件名和正文。", false); return; }
-
-                let fm = "---\n";
-                fm += "title: " + title + "\n";
-                fm += "published: " + published + "\n";
-                if (description) fm += "description: " + description + "\n";
-                if (category) fm += "category: " + category + "\n";
-                if (tags.length) fm += "tags: [" + tags.join(", ") + "]\n";
-                fm += "---\n\n";
-                const md = fm + content.trim() + "\n";
-
-                submitBtn.disabled = true;
-                setStatus(statusEl, "发布中…", undefined);
-                try {
-                    const res = await fetch(CFG.api + "/repos/" + CFG.owner + "/" + CFG.repo + "/contents/" + CFG.postsPath + "/" + slug + ".md", {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token, Accept: "application/vnd.github+json" },
-                        body: JSON.stringify({
-                            message: "后台发布文章：" + title,
-                            content: utf8ToBase64(md),
-                            branch: "main",
-                        }),
-                    });
-                    const data = await res.json();
-                    if (data.content) {
-                        setStatus(statusEl, "已发布！约 2 分钟后线上生效。可继续写下一篇。", true);
-                        this.reset();
-                        $("np-date").value = new Date().toISOString().slice(0, 10);
-                        loadPosts();
-                    } else {
-                        setStatus(statusEl, "发布失败：" + (data.message || "未知错误"), false);
-                    }
-                } catch (err) {
-                    setStatus(statusEl, "发布出错：" + err.message, false);
-                } finally {
-                    submitBtn.disabled = false;
-                }
-            });
-
             $("refresh-list").addEventListener("click", loadPosts);
             $("logout-btn").addEventListener("click", logout);
 
             // ---------- 初始化 ----------
             (function init() {
-                $("np-date").value = new Date().toISOString().slice(0, 10);
                 const token = localStorage.getItem(TOKEN_KEY);
                 if (token) {
                     onAuthed(token);
