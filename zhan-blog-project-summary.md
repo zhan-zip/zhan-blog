@@ -405,3 +405,10 @@ Twikoo（Hugging Face Space）/ GitHub Actions / SMTP（QQ 或 163 邮箱）
   3. textarea + 手动格式化工具栏 → Markdown 嵌套局限，放弃
   4. **Editor.md**（参考 E:\blog Aesthetica）→ 完整工具栏 + 分屏预览，采纳
 - **决策思路详解**：见 4.7（本此补充）
+
+### 2026-08-12 第三轮：图片上传 + 构建稳定修复
+- **功能**：写文章页图片支持**本地选图上传**（点工具栏图片按钮 → 本地文件选择 → 上传 GitHub `public/images/` → 插入图片链接）；`toolbarHandlers` 对 image dialog 不生效，改用 `onload` 按 title 重绑按钮
+- **bug 修复**：fuwari `markdown.css` 的 `@apply link`（依赖 main.css 的自定义类）导致 **CI/本地构建偶发失败**（部署翻车）→ 去掉 `link`，构建稳定（连续构建通过）
+- **bug 修复**：图片文件名含中文会带来部署/URL 风险 → 上传文件名只保留 ASCII
+- **说明**：图片上传到 GitHub 后，本地预览看不到是正常的（图片在远程、本地无此文件），**线上部署完成（约 2 分钟）后可见**；应在线上 admin 或部署后查看
+- 已推送 commit：图片上传 `987856c`、图片按钮修复 `37913c4`、构建根治 `ea2df2a`、文档 `58d6525`
