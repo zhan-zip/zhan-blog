@@ -1,0 +1,86 @@
+---
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import Markdown from "../../components/misc/Markdown.astro";
+import MainGridLayout from "../../layouts/MainGridLayout.astro";
+import { url } from "../../utils/url-utils";
+
+export async function getStaticPaths() {
+	const projects = await getCollection("projects");
+	return projects.map((p) => ({
+		params: { slug: p.slug },
+		props: { project: p },
+	}));
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+const { title, description, tech, url: pUrl, github, status } = project.data;
+---
+
+<MainGridLayout title={title} description={description}>
+    <!-- 项目头部 -->
+    <section class="onload-animation transition bg-[var(--card-bg)] rounded-[var(--radius-large)] px-6 md:px-10 py-10 md:py-12">
+        <div class="flex items-start justify-between gap-3 flex-wrap">
+            <h1 class="transition font-extrabold text-3xl md:text-4xl leading-tight text-90">
+                {title}
+            </h1>
+            {status && (
+                <span class="transition shrink-0 text-xs px-3 py-1.5 rounded-full bg-[var(--btn-regular-bg)] text-[var(--btn-content)]">
+                    {status}
+                </span>
+            )}
+        </div>
+
+        {description && (
+            <p class="transition text-lg mt-4 text-75 leading-relaxed max-w-[40rem]">
+                {description}
+            </p>
+        )}
+
+        {tech.length > 0 && (
+            <div class="flex flex-wrap gap-2 mt-5">
+                {tech.map((t) => (
+                    <span class="transition text-xs px-2.5 py-1 rounded-md bg-[var(--btn-regular-bg)] text-[var(--btn-content)]">
+                        {t}
+                    </span>
+                ))}
+            </div>
+        )}
+
+        {(pUrl || github) && (
+            <div class="flex flex-wrap gap-4 mt-6">
+                {pUrl && (
+                    <a href={pUrl} target="_blank" rel="noopener"
+                       class="transition flex items-center gap-2 h-11 px-6 rounded-xl bg-[var(--primary)] text-white dark:text-black/80 font-bold hover:brightness-110 active:scale-95">
+                        <Icon name="fa6-solid:arrow-up-right-from-square"></Icon>
+                        在线访问
+                    </a>
+                )}
+                {github && (
+                    <a href={github} target="_blank" rel="noopener"
+                       class="transition flex items-center gap-2 h-11 px-6 rounded-xl border-2 border-[var(--primary)] text-[var(--primary)] font-bold active:scale-95">
+                        <Icon name="fa6-brands:github"></Icon>
+                        GitHub 仓库
+                    </a>
+                )}
+            </div>
+        )}
+    </section>
+
+    <!-- 项目正文（项目 .md 的详细说明） -->
+    <section class="mt-8 transition bg-[var(--card-bg)] rounded-[var(--radius-large)] px-6 md:px-10 py-8">
+        <Markdown class="mt-2">
+            <Content />
+        </Markdown>
+    </section>
+
+    <!-- 返回项目页 -->
+    <div class="mt-8 onload-animation">
+        <a href={url("projects/")}
+           class="transition flex items-center gap-1 text-sm font-medium text-[var(--primary)] hover:underline">
+            <Icon name="material-symbols:arrow-back-rounded"></Icon>
+            返回项目列表
+        </a>
+    </div>
+</MainGridLayout>
