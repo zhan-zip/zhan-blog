@@ -282,12 +282,13 @@ const TOKEN_KEY = "zhanblog_admin_token";
         let mousePos = { x: 0, y: 0 };
         function hideToolbar() { toolbar.classList.add("hidden"); }
 
-        // 把工具栏定位到鼠标位置附近（左对齐鼠标；上方空间不足则显示在下方）
+        // 工具栏中心对齐鼠标，显示在鼠标正上方（上方放不下则显示在下方）
         function positionToolbar() {
             const card = toolbar.closest(".relative");
             const cardRect = card.getBoundingClientRect();
             const w = toolbar.offsetWidth, h = toolbar.offsetHeight;
-            const left = Math.max(4, Math.min(mousePos.x - cardRect.left, cardRect.width - w - 4));
+            let left = mousePos.x - cardRect.left - w / 2;
+            left = Math.max(4, Math.min(left, cardRect.width - w - 4));
             let top = mousePos.y - cardRect.top - h - 10;
             if (top < 4) top = mousePos.y - cardRect.top + 24; // 上方放不下，放鼠标下方
             top = Math.max(4, top);
@@ -319,12 +320,23 @@ const TOKEN_KEY = "zhanblog_admin_token";
             setTimeout(() => { if (document.activeElement !== content) hideToolbar(); }, 150);
         });
 
-        // toggle 格式：重复点同一格式 = 取消；加粗/斜体可叠加
+        // 清理选中文本内部的 Markdown 标记（*、#、~、` 等），再重新格式化，避免嵌套错乱
+        function stripMarkdown(input) {
+            return input
+                .replace(/\*\*(.+?)\*\*/g, "$1")
+                .replace(/\*(.+?)\*/g, "$1")
+                .replace(/~~(.+?)~~/g, "$1")
+                .replace(/`(.+?)`/g, "$1")
+                .replace(/^\s*#+\s*/gm, "")
+                .replace(/^\s*>\s*/gm, "");
+        }
+
+        // toggle 格式：重复点同一格式 = 取消；加粗/斜体可叠加；先清理内部标记再包格式
         function applyFormat(fmt) {
             const start = content.selectionStart, end = content.selectionEnd;
             if (start === end) return;
             const text = content.value;
-            const sel = text.slice(start, end);
+            const sel = stripMarkdown(text.slice(start, end));
             let newText, newStart, newEnd;
 
             if (fmt === "quote") {
