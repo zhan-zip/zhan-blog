@@ -5,5 +5,5 @@ tech: [Astro, Tailwind CSS, GitHub Pages]
 url: https://zhan-zip.github.io/zhan-blog
 github: https://github.com/zhan-zip/zhan-blog
 status: 建设中
-featured: true
+featured: false
 ---
