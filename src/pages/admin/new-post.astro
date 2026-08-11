@@ -21,7 +21,7 @@ const TOKEN_KEY = "zhanblog_admin_token";
 
         <div class="flex gap-6 items-start">
             <!-- 左侧竖向固定：Markdown 快速对照 -->
-            <aside class="hidden lg:block w-56 shrink-0 sticky top-24 self-start max-h-[calc(100vh-9rem)] overflow-y-auto">
+            <aside class="hidden lg:block w-40 shrink-0 sticky top-24 self-start max-h-[calc(100vh-9rem)] overflow-y-auto">
                 <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm">
                     <h3 class="font-bold text-sm text-90 mb-1">Markdown 快速对照</h3>
                     <p class="text-[0.7rem] text-50 mb-4">点击语法，插入到正文光标处</p>
@@ -76,34 +76,34 @@ const TOKEN_KEY = "zhanblog_admin_token";
                         <div class="flex flex-col gap-2">
                             <label for="np-title" class="transition text-sm font-medium text-75">标题 *</label>
                             <input id="np-title" type="text" required placeholder="文章标题"
-                                   class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                                   class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] border border-black/25 dark:border-white/25 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] text-90">
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div class="flex flex-col gap-2">
                                 <label for="np-slug" class="transition text-sm font-medium text-75">文件名 *</label>
                                 <input id="np-slug" type="text" required placeholder="如 my-post"
-                                       class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                                       class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] border border-black/25 dark:border-white/25 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] text-90">
                             </div>
                             <div class="flex flex-col gap-2">
                                 <label for="np-date" class="transition text-sm font-medium text-75">日期</label>
                                 <input id="np-date" type="date"
-                                       class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                                       class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] border border-black/25 dark:border-white/25 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] text-90">
                             </div>
                             <div class="flex flex-col gap-2">
                                 <label for="np-category" class="transition text-sm font-medium text-75">分类</label>
                                 <input id="np-category" type="text" placeholder="如 教程"
-                                       class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                                       class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] border border-black/25 dark:border-white/25 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] text-90">
                             </div>
                             <div class="flex flex-col gap-2">
                                 <label for="np-tags" class="transition text-sm font-medium text-75">标签（逗号分隔）</label>
                                 <input id="np-tags" type="text" placeholder="如 前端, Vue"
-                                       class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                                       class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] border border-black/25 dark:border-white/25 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] text-90">
                             </div>
                         </div>
                         <div class="flex flex-col gap-2">
                             <label for="np-desc" class="transition text-sm font-medium text-75">摘要</label>
                             <input id="np-desc" type="text" placeholder="一句话摘要（可选）"
-                                   class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90">
+                                   class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] border border-black/25 dark:border-white/25 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] text-90">
                         </div>
                     </form>
                 </div>
@@ -113,7 +113,7 @@ const TOKEN_KEY = "zhanblog_admin_token";
                     <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm flex flex-col">
                         <label for="np-content" class="transition text-sm font-medium text-75 mb-3">正文（Markdown）*</label>
                         <textarea id="np-content" rows="20" required placeholder="在这里用 Markdown 写正文，右侧实时预览…"
-                                  class="transition flex-1 w-full px-4 py-3 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90 resize-none font-mono text-sm leading-relaxed h-[calc(100vh-26rem)] min-h-[480px]"></textarea>
+                                  class="transition flex-1 w-full px-4 py-3 rounded-lg bg-[var(--btn-regular-bg)] border border-black/25 dark:border-white/25 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] text-90 resize-none font-mono text-sm leading-relaxed h-[calc(100vh-23rem)] min-h-[520px]"></textarea>
                     </div>
                     <div class="rounded-2xl border border-black/10 dark:border-white/15 bg-[oklch(0.985_0.003_250)] dark:bg-[var(--card-bg)] p-5 transition hover:border-black/25 dark:hover:border-white/25 hover:shadow-sm flex flex-col">
                         <div class="flex items-center gap-2 mb-3">
@@ -122,15 +122,15 @@ const TOKEN_KEY = "zhanblog_admin_token";
                             <span id="word-count" class="ml-auto text-xs text-75"></span>
                         </div>
                         <div id="preview"
-                             class="transition flex-1 h-[calc(100vh-26rem)] min-h-[480px] overflow-y-auto prose dark:prose-invert max-w-none text-[0.9rem] leading-relaxed text-75"></div>
+                             class="transition flex-1 h-[calc(100vh-23rem)] min-h-[520px] overflow-y-auto prose dark:prose-invert max-w-none text-[0.9rem] leading-relaxed text-75"></div>
                     </div>
                 </div>
 
                 <!-- 发布 -->
                 <div class="mt-6 flex flex-col gap-3">
                     <button id="np-submit"
-                            class="transition flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-[var(--primary)] text-white dark:text-black/80 font-bold hover:brightness-110 hover:shadow-lg active:scale-95">
-                        <Icon name="material-symbols:upload-rounded"></Icon>
+                            class="transition flex items-center justify-center gap-2 h-14 px-12 text-base rounded-xl bg-[var(--primary)] text-white dark:text-black/80 font-bold border-2 border-black/30 dark:border-white/30 hover:brightness-110 hover:shadow-lg active:scale-95">
+                        <Icon name="material-symbols:upload-rounded" class="text-xl"></Icon>
                         发布文章
                     </button>
                     <p id="np-status" class="transition text-sm text-75" role="status" aria-live="polite"></p>
@@ -138,6 +138,37 @@ const TOKEN_KEY = "zhanblog_admin_token";
             </div>
         </div>
     </div>
+
+    <style is:global>
+        /* 补全局变量（写文章页用简单布局，缺侧边栏页面的变量注入） */
+        :root {
+            --primary: oklch(0.55 0.21 var(--hue));
+            --page-bg: oklch(1 0 0);
+            --card-bg: white;
+            --btn-content: oklch(0.55 0.12 var(--hue));
+            --btn-regular-bg: oklch(0.95 0.025 var(--hue));
+            --btn-regular-bg-hover: oklch(0.9 0.05 var(--hue));
+            --btn-regular-bg-active: oklch(0.85 0.08 var(--hue));
+            --btn-card-bg-hover: oklch(0.98 0.005 var(--hue));
+            --btn-card-bg-active: oklch(0.9 0.03 var(--hue));
+            --line-color: rgba(0, 0, 0, 0.1);
+            --line-divider: rgba(0, 0, 0, 0.08);
+            --radius-large: 1rem;
+        }
+        :root.dark {
+            --primary: oklch(0.70 0.17 var(--hue));
+            --page-bg: oklch(0.15 0.012 var(--hue));
+            --card-bg: oklch(0.20 0.014 var(--hue));
+            --btn-content: oklch(0.75 0.1 var(--hue));
+            --btn-regular-bg: oklch(0.33 0.035 var(--hue));
+            --btn-regular-bg-hover: oklch(0.38 0.04 var(--hue));
+            --btn-regular-bg-active: oklch(0.43 0.045 var(--hue));
+            --btn-card-bg-hover: oklch(0.3 0.03 var(--hue));
+            --btn-card-bg-active: oklch(0.35 0.035 var(--hue));
+            --line-color: rgba(255, 255, 255, 0.1);
+            --line-divider: rgba(255, 255, 255, 0.08);
+        }
+    </style>
 
     <style>
         .insert-btn {
