@@ -3,16 +3,27 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
 
-// // Retrieve posts and sort them by publication date
+// 从标题提取前导序号（如 "03-xxx" → 3），无序号返回 -1
+function extractTitleNumber(title: string): number {
+	const m = String(title).match(/^\s*(\d+)/);
+	return m ? Number.parseInt(m[1], 10) : -1;
+}
+
+// // Retrieve posts and sort them by title number (descending)
 async function getRawSortedPosts() {
 	const allBlogPosts = await getCollection("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});
 
 	const sorted = allBlogPosts.sort((a, b) => {
-		const dateA = new Date(a.data.published);
-		const dateB = new Date(b.data.published);
-		return dateA > dateB ? -1 : 1;
+		const numA = extractTitleNumber(a.data.title);
+		const numB = extractTitleNumber(b.data.title);
+		if (numA !== numB) {
+			// 序号大的在前（降序）；有序号在前，无序号排最后
+			return numB - numA;
+		}
+		// 序号相同或都无序号：按文件名（slug）升序，顺序稳定
+		return a.slug < b.slug ? -1 : 1;
 	});
 	return sorted;
 }
