@@ -47,19 +47,15 @@ export const navBarConfig: NavBarConfig = {
 			name: "项目",
 			url: "/projects/",
 		},
-		{
-			name: "服务",
-			url: "/services/",
-		},
+		// 暂时隐藏服务导航（页面代码保留）
+		// {
+		// 	name: "服务",
+		// 	url: "/services/",
+		// },
 		LinkPreset.About,
 		{
 			name: "联系",
 			url: "/contact/",
-		},
-		{
-			name: "GitHub",
-			url: "https://github.com/zhan-zip", // Internal links should not include the base path, as it is automatically added
-			external: true, // Show an external link icon and will open in a new tab
 		},
 	],
 };
@@ -67,7 +63,7 @@ export const navBarConfig: NavBarConfig = {
 export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/demo-avatar.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "zhan · 一盏",
-	bio: "一个用于分享开发教程，记录项目经历的个人博客。",
+	bio: "一个用于分享开发教程，记录项目经历的个人博客。主要提供思路和经验总结。",
 	links: [
 		{
 			name: "GitHub",
