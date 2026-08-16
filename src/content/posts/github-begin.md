@@ -2,8 +2,8 @@
 title: 03-GitHub有什么用？
 published: 2026-08-14
 description: github是什么？有什么用？怎么用？
-category: 教程
-tags: [教程, 入门, github]
+category: 入门教程
+tags: [教程, github]
 ---
 
 # GitHub到底有啥用？

@@ -2,8 +2,8 @@
 title: 01-web项目从0到部署上线
 published: 2026-08-12
 description: 第一次做网站，个人web网站项目从哪里下手？怎么让别人看到？成本需要多少？
-category: 教程
-tags: [教程, 入门, 基础, web]
+category: 入门教程
+tags: [教程, web]
 ---
 
 # 个人开发web项目，怎么做？

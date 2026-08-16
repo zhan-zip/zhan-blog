@@ -2,8 +2,8 @@
 title: 02-什么？我的ai又在偷懒！？
 published: 2026-08-14
 description: ai为什么总是不好好干活？怎么才能鞭笞它听话？
-category: 教程
-tags: [教程, 入门, ai]
+category: 入门教程
+tags: [教程, ai]
 ---
 
 # ai老是偷懒不干活怎么办？
