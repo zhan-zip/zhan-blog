@@ -73,6 +73,8 @@ if (help) {
   --dry-run            只预览邮件内容，不实际发送
   --help               显示帮助
 
+订阅者维护：直接编辑 docs/subscribers.md（每行: - 邮箱 # 备注）
+
 环境变量 (.env):
   SMTP_HOST=smtp.qq.com
   SMTP_PORT=465
@@ -87,7 +89,7 @@ if (help) {
 function loadSubscribers() {
     if (!fs.existsSync(SUBSCRIBERS_FILE)) {
         console.error(`❌ 订阅者文件不存在: ${SUBSCRIBERS_FILE}`);
-        console.log("💡 先用 scripts/add-subscriber.js 添加订阅者");
+        console.log("💡 请编辑 docs/subscribers.md 添加订阅者（每行: - 邮箱 # 备注）");
         process.exit(1);
     }
     const content = fs.readFileSync(SUBSCRIBERS_FILE, "utf-8");
