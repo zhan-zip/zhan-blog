@@ -19,7 +19,7 @@ import MarkdownIt from "markdown-it";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 const POSTS_DIR = path.join(PROJECT_ROOT, "src/content/posts");
-const SUBSCRIBERS_FILE = path.join(PROJECT_ROOT, "docs/subscribers.json");
+const SUBSCRIBERS_FILE = path.join(PROJECT_ROOT, "docs/subscribers.md");
 const STATE_FILE = path.join(PROJECT_ROOT, "docs/notify-state.json");
 const SITE_URL = "https://zhan-zip.github.io/zhan-blog";
 const TEMPLATE_FILE = path.join(PROJECT_ROOT, "src/content/spec/email-template.md");
@@ -90,8 +90,20 @@ function loadSubscribers() {
         console.log("💡 先用 scripts/add-subscriber.js 添加订阅者");
         process.exit(1);
     }
-    const data = JSON.parse(fs.readFileSync(SUBSCRIBERS_FILE, "utf-8"));
-    return data.map(s => s.email).filter(Boolean);
+    const content = fs.readFileSync(SUBSCRIBERS_FILE, "utf-8");
+    const emails = [];
+    const lines = content.split("\n");
+    for (const line of lines) {
+        const match = line.match(/^-\s+([^\s#]+)\s*(?:#\s*(.+))?$/);
+        if (match) {
+            emails.push(match[1].trim());
+        }
+    }
+    if (emails.length === 0) {
+        console.error("❌ 订阅者列表为空");
+        process.exit(1);
+    }
+    return emails;
 }
 
 // ========== 读取上次通知时间 ==========
