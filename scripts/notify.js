@@ -13,6 +13,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { createTransport } from "nodemailer";
 import matter from "gray-matter";
+import MarkdownIt from "markdown-it";
 
 // ========== 配置 ==========
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -21,6 +22,7 @@ const POSTS_DIR = path.join(PROJECT_ROOT, "src/content/posts");
 const SUBSCRIBERS_FILE = path.join(PROJECT_ROOT, "docs/subscribers.json");
 const STATE_FILE = path.join(PROJECT_ROOT, "docs/notify-state.json");
 const SITE_URL = "https://zhan-zip.github.io/zhan-blog";
+const TEMPLATE_FILE = path.join(PROJECT_ROOT, "src/content/spec/email-template.md");
 
 // 读取 .env
 function loadEnv() {
@@ -150,62 +152,51 @@ function buildEmail(posts) {
     const dateStr = new Date().toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" });
     const count = posts.length;
 
-    const listHtml = posts.map(p => `
-        <li style="margin-bottom: 16px;">
-            <a href="${p.url}" style="color: #4242FA; text-decoration: none; font-weight: 600; font-size: 16px;">
-                ${p.title}
-            </a>
-            ${p.description ? `<p style="margin: 6px 0 0; color: #666; font-size: 14px;">${p.description}</p>` : ""}
-            <p style="margin: 4px 0 0; color: #999; font-size: 12px;">${p.published?.toLocaleDateString("zh-CN") || ""}</p>
-        </li>
-    `).join("");
+    // 生成文章列表 Markdown
+    const articlesMd = posts.map(p => {
+        const descLine = p.description ? `  > ${p.description}` : "";
+        return `- [${p.title}](${p.url})${descLine}\n  <small>${p.published?.toLocaleDateString("zh-CN") || ""}</small>`;
+    }).join("\n\n");
 
-    const listText = posts.map(p =>
-        `• ${p.title}\n  ${p.url}\n  ${p.description || ""}\n`
-    ).join("\n");
+    // 读取模板
+    let template = "";
+    if (fs.existsSync(TEMPLATE_FILE)) {
+        const { content } = matter(fs.readFileSync(TEMPLATE_FILE, "utf-8"));
+        template = content.trim();
+    } else {
+        // 兜底模板
+        template = `# 📬 {{siteName}} 更新通知\n\n{{date}} · 共 **{{count}}** 篇新内容\n\n---\n\n{{articlesList}}\n\n---\n\n> 你收到这封邮件是因为订阅了 [{{siteName}}]({{siteUrl}}) 的更新通知。\n>\n> 不想收到？[回复此邮件](mailto:{{fromEmail}}?subject=退订) 告诉我，我会手动移除。`;
+    }
+
+    // 变量替换
+    const vars = {
+        siteName: "zhan-Blog",
+        date: dateStr,
+        count: String(count),
+        articlesList: articlesMd,
+        siteUrl: SITE_URL,
+        fromEmail: SMTP_FROM,
+    };
+
+    let rendered = template;
+    for (const [key, val] of Object.entries(vars)) {
+        rendered = rendered.replaceAll(`{{${key}}}`, val);
+    }
+
+    // Markdown 转 HTML
+    const md = new MarkdownIt({ html: true, linkify: true, typographer: true });
+    const html = md.render(rendered);
+
+    // 纯文本版（去掉 Markdown 标记的简单版）
+    const text = rendered
+        .replace(/^#+\s+/gm, "")
+        .replace(/\*\*(.+?)\*\*/g, "$1")
+        .replace(/\[(.+?)\]\((.+?)\)/g, "$1 ($2)")
+        .replace(/^>\s+/gm, "")
+        .replace(/<small>(.+?)<\/small>/g, "  $1")
+        .trim();
 
     const subject = `📬 ${count} 篇新文章更新通知 (${dateStr})`;
-
-    const html = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { border-bottom: 2px solid #4242FA; padding-bottom: 16px; margin-bottom: 24px; }
-        .title { color: #4242FA; margin: 0; }
-        .subtitle { color: #666; margin: 8px 0 0; }
-        ul { list-style: none; padding: 0; }
-        .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #eee; color: #999; font-size: 13px; }
-        .unsubscribe { color: #4242FA; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1 class="title">📬 博客更新通知</h1>
-        <p class="subtitle">${dateStr} · 共 ${count} 篇新内容</p>
-    </div>
-    <ul>
-        ${listHtml}
-    </ul>
-    <div class="footer">
-        <p>你收到这封邮件是因为订阅了 <a href="${SITE_URL}">zhan-Blog</a> 的更新通知。</p>
-        <p class="unsubscribe">不想收到？<a href="mailto:${SMTP_FROM}?subject=退订">回复此邮件</a> 告诉我，我会手动移除。</p>
-    </div>
-</body>
-</html>
-`;
-
-    const text = `
-📬 博客更新通知 (${dateStr}) · 共 ${count} 篇新内容
-
-${listText}
-
----
-你收到这封邮件是因为订阅了 zhan-Blog (${SITE_URL}) 的更新通知。
-不想收到？回复此邮件告诉我，我会手动移除。
-`;
 
     return { subject, html, text };
 }
