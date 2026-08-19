@@ -16,6 +16,14 @@ const projects = (await getCollection("projects"))
 // 首页 Hero 文案（编辑 src/content/spec/home.md）
 const homePost = await getEntry("spec", "home");
 const { heroTitle, heroSubtitle, ctaContact, ctaProjects } = homePost.data;
+
+// 推荐博客（编辑 src/content/spec/recommended.md）
+const recommendedPost = await getEntry("spec", "recommended");
+const { enable: recommendedEnable, sites: recommendedSites = [] } = recommendedPost.data;
+
+// 获取所有文章用于 slug 反查标题/描述
+const allPosts = await getCollection("posts");
+const postMap = new Map(allPosts.map(p => [p.slug, p]));
 ---
 
 <MainGridLayout title="首页">
@@ -40,6 +48,46 @@ const { heroTitle, heroSubtitle, ctaContact, ctaProjects } = homePost.data;
             </a>
         </div>
     </section>
+
+    <!-- 推荐博客 -->
+    {recommendedEnable && recommendedSites.length > 0 && (
+        <section class="mt-20 md:mt-24">
+            <div class="flex items-center justify-between">
+                <h2 class="onload-animation transition flex items-center gap-3 font-bold text-2xl md:text-3xl text-90">
+                    <span class="w-1.5 h-6 rounded-md bg-[var(--primary)]"></span>
+                    推荐文章
+                </h2>
+            </div>
+            <div class="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {recommendedSites.map((site, i) => {
+                    const post = site.slug ? postMap.get(site.slug) : null;
+                    const title = site.name || post?.data.title || site.slug;
+                    const description = site.desc || post?.data.description;
+                    const url = site.slug ? getPostUrlBySlug(site.slug) : "#";
+                    return (
+                        <a
+                            href={url}
+                            class="onload-animation card-base relative flex flex-col rounded-[var(--radius-large)] p-7 md:p-8 transition project-card-hover"
+                            style={`animation-delay: calc(var(--content-delay) + ${i * 80}ms);`}
+                        >
+                            <div class="flex items-start justify-between gap-3">
+                                <h3 class="transition font-bold text-xl leading-snug text-90 hover:text-[var(--primary)]">{title}</h3>
+                            </div>
+                            {description && (
+                                <p class="transition text-75 mt-3 leading-relaxed flex-1">{description}</p>
+                            )}
+                            <div class="relative z-30 flex items-center justify-between gap-3 mt-5 pt-5 border-t border-dashed border-black/10 dark:border-white/15">
+                                <span class="transition text-sm font-medium text-[var(--primary)] hover:underline">
+                                    阅读全文
+                                    <Icon name="material-symbols:arrow-forward-rounded" class="text-sm" />
+                                </span>
+                            </div>
+                        </a>
+                    );
+                })}
+            </div>
+        </section>
+    )}
 
     <!-- 精选项目 -->
     {projects.length > 0 && (
