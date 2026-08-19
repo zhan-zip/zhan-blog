@@ -4,6 +4,7 @@ import { Icon } from "astro-icon/components";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 import PostCard from "../components/PostCard.astro";
 import ProjectCard from "../components/ProjectCard.astro";
+import SubscribeForm from "../components/SubscribeForm.astro";
 import { getSortedPosts } from "../utils/content-utils";
 import { getPostUrlBySlug, url } from "../utils/url-utils";
 
@@ -147,4 +148,7 @@ const postMap = new Map(allPosts.map(p => [p.slug, p]));
             ))}
         </div>
     </section>
+
+    <!-- 订阅更新 -->
+    <SubscribeForm class="mt-20 md:mt-24" />
 </MainGridLayout>

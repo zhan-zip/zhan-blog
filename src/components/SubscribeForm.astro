@@ -1,0 +1,97 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  class?: string;
+}
+
+const className = Astro.props.class;
+---
+
+<section class:list={["onload-animation transition bg-[var(--card-bg)] rounded-[var(--radius-large)] px-6 md:px-10 py-10 md:py-12", className]}>
+    <h2 class="transition flex items-center gap-3 font-bold text-2xl md:text-3xl text-90">
+        <span class="w-1.5 h-6 rounded-md bg-[var(--primary)]"></span>
+        订阅更新
+    </h2>
+    <p class="transition text-75 mt-3 max-w-2xl">
+        填入邮箱，每次发新文章我会第一时间发邮件通知你（频率极低，纯干货，随时可退订）。
+    </p>
+
+    <form id="subscribe-form" class="mt-8 flex flex-col md:flex-row gap-4 max-w-xl">
+        <input
+            type="hidden"
+            name="access_key"
+            value="41755341-b071-4157-802a-c8900ef81f27"
+        />
+        <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" />
+
+        <div class="flex-1 flex flex-col gap-2">
+            <label for="sub-email" class="sr-only">邮箱地址</label>
+            <input
+                id="sub-email"
+                name="email"
+                type="email"
+                required
+                placeholder="你的邮箱地址"
+                class="transition h-11 px-4 rounded-lg bg-[var(--btn-regular-bg)] outline-none focus:ring-2 focus:ring-[var(--primary)] text-90"
+            />
+        </div>
+
+        <button
+            type="submit"
+            id="sub-submit"
+            class="transition flex items-center justify-center gap-2 h-11 px-8 rounded-xl bg-[var(--primary)] text-white dark:text-black/80 font-bold hover:brightness-110 active:scale-95 whitespace-nowrap"
+        >
+            <Icon name="material-symbols:send-rounded"></Icon>
+            订阅
+        </button>
+    </form>
+
+    <p id="sub-status" class="transition text-sm text-75 mt-3" role="status" aria-live="polite"></p>
+</section>
+
+<script is:inline>
+    (function () {
+        const form = document.getElementById("subscribe-form");
+        const statusEl = document.getElementById("sub-status");
+        const submitBtn = document.getElementById("sub-submit");
+
+        function setStatus(text, ok) {
+            statusEl.textContent = text;
+            statusEl.classList.toggle("text-emerald-600", ok === true);
+            statusEl.classList.toggle("dark:text-emerald-400", ok === true);
+            statusEl.classList.toggle("text-red-500", ok === false);
+            statusEl.classList.toggle("dark:text-red-400", ok === false);
+        }
+
+        if (form) {
+            form.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                submitBtn.disabled = true;
+                setStatus("正在提交…", undefined);
+                const data = Object.fromEntries(new FormData(form).entries());
+                try {
+                    const res = await fetch("https://api.web3forms.com/submit", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                        body: JSON.stringify(Object.assign({}, data, {
+                            subject: "博客更新订阅",
+                            from_name: "订阅者",
+                        })),
+                    });
+                    const result = await res.json();
+                    if (result.success) {
+                        setStatus("订阅成功！欢迎加入，新文章发布时会第一时间通知你。", true);
+                        form.reset();
+                    } else {
+                        setStatus("订阅失败：" + (result.message || "未知错误，请稍后再试。"), false);
+                    }
+                } catch (err) {
+                    setStatus("网络异常，订阅失败。可直接写信告诉我邮箱，我手动加入。", false);
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+    })();
+</script>
