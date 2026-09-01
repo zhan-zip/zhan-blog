@@ -1,0 +1,15 @@
+
+> zhan-blog@0.1.0 dev D:\Desktop\test\claude-test\zhan-blog
+> astro dev "--host" "0.0.0.0"
+
+19:49:09 [types] Generated 1ms
+19:49:10 [content] Syncing content
+19:49:10 [content] Synced content
+19:49:10 [vite] Forced re-optimization of dependencies
+
+ astro  v5.13.10 ready in 2470 ms
+
+┃ Local    http://localhost:4321/zhan-blog/
+┃ Network  http://192.168.0.102:4321/zhan-blog/
+
+19:49:10 watching for file changes...

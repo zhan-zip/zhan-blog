@@ -1,0 +1,20 @@
+
+> zhan-blog@0.1.0 dev D:\Desktop\test\claude-test\zhan-blog
+> astro dev "--host" "0.0.0.0"
+
+19:47:59 [types] Generated 2ms
+
+ update  ▶ New version of Astro available: 7.2.10
+  Run pnpm dlx @astrojs/upgrade to update
+
+19:48:02 [content] Syncing content
+19:48:02 [content] Synced content
+19:48:02 [vite] Forced re-optimization of dependencies
+
+ astro  v5.13.10 ready in 25035 ms
+
+┃ Local    http://localhost:4321/zhan-blog/
+┃ Network  http://192.168.0.102:4321/zhan-blog/
+
+19:48:02 watching for file changes...
+ ELIFECYCLE  Command failed with exit code 4294967295.
