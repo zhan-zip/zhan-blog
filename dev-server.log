@@ -13,3 +13,218 @@
 ┃ Network  http://192.168.0.102:4321/zhan-blog/
 
 19:49:10 watching for file changes...
+Browserslist: browsers data (caniuse-lite) is 19 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+19:49:25 [200] / 865ms
+19:49:26 [vite] [32m✨ new dependencies optimized: [33m@swup/astro/serialise, @swup/astro/idle, @swup/astro/client/Swup, @swup/astro/client/SwupA11yPlugin, @swup/astro/client/SwupPreloadPlugin, @swup/astro/client/SwupScrollPlugin, @swup/astro/client/SwupHeadPlugin, @swup/astro/client/SwupScriptsPlugin[32m[39m
+19:49:26 [vite] [32m✨ optimized dependencies changed. reloading[39m
+19:49:30 [200] / 31ms
+19:54:46 [watch] src/content/posts/ltcd-1.md
+19:54:46 [glob-loader] Reloaded data from ltcd-1.md
+19:54:47 [200] / 123ms
+19:54:49 [200] / 19ms
+19:54:50 [200] /archive/ 9ms
+19:54:52 [200] /posts/ltcd-1/ 11ms
+19:54:53 [200] /archive/ 9ms
+19:55:13 [watch] src/content/posts/ltcd-1.md
+19:55:13 [watch] src/content/posts/ltcd-1.md
+19:55:13 [glob-loader] Reloaded data from ltcd-1.md
+19:55:14 [200] /posts/ltcd-1/ 106ms
+19:55:15 [200] /posts/ltcd-1/ 13ms
+19:55:18 [200] /about/ 9ms
+19:55:19 [200] / 11ms
+19:55:19 [200] /archive/ 8ms
+19:55:25 [200] /posts/ltcd-1/ 7ms
+19:55:25 [200] /about/ 9ms
+19:55:50 [watch] src/content/posts/ltcd-1.md
+19:55:50 [watch] src/content/posts/ltcd-1.md
+19:55:50 [glob-loader] Reloaded data from ltcd-1.md
+19:55:50 [200] /posts/ltcd-1/ 107ms
+19:55:50 [200] /posts/ltcd-1/ 11ms
+19:55:52 [watch] src/content/posts/ltcd-1.md
+19:55:52 [watch] src/content/posts/ltcd-1.md
+19:55:52 [glob-loader] Reloaded data from ltcd-1.md
+19:55:52 [200] /posts/ltcd-1/ 107ms
+19:55:52 [200] /posts/ltcd-1/ 11ms
+19:55:53 [200] /about/ 10ms
+19:55:53 [200] /projects/ 7ms
+19:55:53 [200] /archive/ 9ms
+19:55:56 [200] /archive/ 8ms
+19:56:00 [200] /posts/ltcd-1/ 8ms
+19:56:00 [200] /about/ 7ms
+19:56:34 [watch] src/content/posts/ltcd-1.md
+19:56:34 [watch] src/content/posts/ltcd-1.md
+19:56:34 [glob-loader] Reloaded data from ltcd-1.md
+19:56:34 [200] /posts/ltcd-1/ 99ms
+19:56:34 [200] /posts/ltcd-1/ 9ms
+19:56:57 [watch] src/content/posts/ltcd-1.md
+19:56:57 [watch] src/content/posts/ltcd-1.md
+19:56:57 [glob-loader] Reloaded data from ltcd-1.md
+19:56:57 [200] /posts/ltcd-1/ 105ms
+19:56:57 [200] /posts/ltcd-1/ 8ms
+19:57:20 [watch] src/content/posts/ltcd-1.md
+19:57:20 [watch] src/content/posts/ltcd-1.md
+19:57:20 [glob-loader] Reloaded data from ltcd-1.md
+19:57:20 [200] /posts/ltcd-1/ 98ms
+19:57:20 [200] /posts/ltcd-1/ 7ms
+19:58:52 [watch] src/content/posts/ltcd-1.md
+19:58:52 [watch] src/content/posts/ltcd-1.md
+19:58:52 [glob-loader] Reloaded data from ltcd-1.md
+19:58:52 [200] /posts/ltcd-1/ 101ms
+19:58:53 [200] /posts/ltcd-1/ 12ms
+19:59:14 [watch] src/content/posts/ltcd-1.md
+19:59:14 [watch] src/content/posts/ltcd-1.md
+19:59:14 [glob-loader] Reloaded data from ltcd-1.md
+19:59:14 [200] /posts/ltcd-1/ 102ms
+19:59:14 [200] /posts/ltcd-1/ 8ms
+19:59:48 [watch] src/content/posts/ltcd-1.md
+19:59:48 [watch] src/content/posts/ltcd-1.md
+19:59:48 [glob-loader] Reloaded data from ltcd-1.md
+19:59:48 [200] /posts/ltcd-1/ 97ms
+19:59:48 [200] /posts/ltcd-1/ 8ms
+20:02:05 [watch] src/content/posts/ltcd-1.md
+20:02:05 [watch] src/content/posts/ltcd-1.md
+20:02:05 [glob-loader] Reloaded data from ltcd-1.md
+20:02:06 [200] /posts/ltcd-1/ 97ms
+20:02:06 [200] /posts/ltcd-1/ 12ms
+20:19:29 [watch] src/content/posts/ltcd-1.md
+20:19:29 [watch] src/content/posts/ltcd-1.md
+20:19:29 [glob-loader] Reloaded data from ltcd-1.md
+20:19:30 [200] /posts/ltcd-1/ 102ms
+20:19:30 [200] /posts/ltcd-1/ 14ms
+20:19:32 [200] /about/ 8ms
+20:19:33 [200] /posts/ltcd-1/ 10ms
+20:19:33 [200] /posts/ltcd-1/ 8ms
+20:19:34 [200] /about/ 8ms
+20:19:41 [200] /archive/ 7ms
+20:25:26 [watch] src/content/posts/ltcd-1.md
+20:25:26 [watch] src/content/posts/ltcd-1.md
+20:25:26 [glob-loader] Reloaded data from ltcd-1.md
+20:25:27 [200] /posts/ltcd-1/ 101ms
+20:25:28 [200] /posts/ltcd-1/ 12ms
+20:35:08 [watch] src/content/posts/ltcd-1.md
+20:35:08 [watch] src/content/posts/ltcd-1.md
+20:35:08 [glob-loader] Reloaded data from ltcd-1.md
+20:35:08 [200] /posts/ltcd-1/ 122ms
+20:35:09 [200] /posts/ltcd-1/ 11ms
+20:35:10 [200] /archive/ 9ms
+20:35:14 [200] /archive/ 9ms
+20:35:14 [200] /archive/ 9ms
+20:35:15 [200] /posts/ltcd-1/ 9ms
+20:35:16 [200] /posts/ltcd-1/ 7ms
+20:35:16 [200] /archive/ 10ms
+20:35:16 [200] /archive/ 10ms
+20:35:16 [200] /archive/ 9ms
+20:35:29 [watch] src/content/posts/ltcd-1.md
+20:35:29 [watch] src/content/posts/ltcd-1.md
+20:35:29 [glob-loader] Reloaded data from ltcd-1.md
+20:35:29 [200] /posts/ltcd-1/ 106ms
+20:35:32 [200] /posts/ltcd-1/ 10ms
+20:38:57 [watch] src/content/posts/ltcd-1.md
+20:38:57 [watch] src/content/posts/ltcd-1.md
+20:38:57 [glob-loader] Reloaded data from ltcd-1.md
+20:39:02 [watch] src/content/posts/ltcd-1.md
+20:39:02 [watch] src/content/posts/ltcd-1.md
+20:39:02 [glob-loader] Reloaded data from ltcd-1.md
+20:41:32 [watch] src/content/posts/ltcd-1.md
+20:41:32 [watch] src/content/posts/ltcd-1.md
+20:41:32 [glob-loader] Reloaded data from ltcd-1.md
+20:41:49 [watch] src/content/posts/ltcd-1.md
+20:41:49 [watch] src/content/posts/ltcd-1.md
+20:41:49 [glob-loader] Reloaded data from ltcd-1.md
+20:45:07 [watch] src/content/posts/ltcd-1.md
+20:45:07 [watch] src/content/posts/ltcd-1.md
+20:45:07 [glob-loader] Reloaded data from ltcd-1.md
+20:45:10 [watch] src/content/posts/ltcd-1.md
+20:45:10 [watch] src/content/posts/ltcd-1.md
+20:45:10 [glob-loader] Reloaded data from ltcd-1.md
+20:50:42 [watch] src/content/posts/ltcd-1.md
+20:50:42 [watch] src/content/posts/ltcd-1.md
+20:50:42 [glob-loader] Reloaded data from ltcd-1.md
+20:50:51 [watch] src/content/posts/ltcd-1.md
+20:50:51 [watch] src/content/posts/ltcd-1.md
+20:50:51 [glob-loader] Reloaded data from ltcd-1.md
+20:51:06 [watch] src/content/posts/ltcd-1.md
+20:51:06 [watch] src/content/posts/ltcd-1.md
+20:51:06 [glob-loader] Reloaded data from ltcd-1.md
+20:51:31 [watch] src/content/posts/ltcd-1.md
+20:51:31 [watch] src/content/posts/ltcd-1.md
+20:51:31 [glob-loader] Reloaded data from ltcd-1.md
+20:52:40 [200] / 124ms
+20:52:41 [200] / 13ms
+20:52:41 [200] /_image/ 449ms
+20:52:41 [200] /contact/ 10ms
+20:52:44 [200] /projects/ 8ms
+20:52:44 [200] /archive/ 9ms
+20:52:46 [200] /posts/ltcd-1/ 11ms
+20:52:58 [watch] src/content/posts/ltcd-1.md
+20:52:58 [watch] src/content/posts/ltcd-1.md
+20:52:58 [glob-loader] Reloaded data from ltcd-1.md
+20:52:59 [200] /posts/ltcd-1/ 117ms
+20:53:00 [200] /posts/ltcd-1/ 7ms
+20:53:12 [watch] src/content/posts/ltcd-1.md
+20:53:12 [watch] src/content/posts/ltcd-1.md
+20:53:12 [glob-loader] Reloaded data from ltcd-1.md
+20:53:13 [200] /posts/ltcd-1/ 115ms
+20:53:13 [200] /posts/ltcd-1/ 8ms
+20:53:14 [200] /archive/ 8ms
+20:53:14 [200] /archive/ 7ms
+20:53:15 [200] /posts/ltcd-1/ 7ms
+20:53:15 [200] /posts/ltcd-1/ 7ms
+20:53:16 [200] /archive/ 8ms
+20:53:16 [200] /archive/ 8ms
+20:53:18 [watch] src/content/posts/ltcd-1.md
+20:53:18 [watch] src/content/posts/ltcd-1.md
+20:53:18 [glob-loader] Reloaded data from ltcd-1.md
+20:53:19 [200] /posts/ltcd-1/ 124ms
+20:53:19 [200] /posts/ltcd-1/ 7ms
+20:53:21 [200] /posts/ltcd-1/ 7ms
+20:53:22 [200] /_image/ 125ms
+20:53:22 [200] /posts/ltcd-1/ 8ms
+20:53:32 [watch] src/content/posts/ltcd-1.md
+20:53:32 [watch] src/content/posts/ltcd-1.md
+20:53:32 [glob-loader] Reloaded data from ltcd-1.md
+20:53:32 [200] /posts/ltcd-1/ 116ms
+20:53:33 [200] /posts/ltcd-1/ 9ms
+20:53:57 [watch] src/content/posts/ltcd-1.md
+20:53:57 [watch] src/content/posts/ltcd-1.md
+20:53:57 [glob-loader] Reloaded data from ltcd-1.md
+20:53:58 [200] /posts/ltcd-1/ 129ms
+20:53:58 [200] /posts/ltcd-1/ 8ms
+20:55:53 [watch] src/content/posts/ltcd-1.md
+20:55:53 [watch] src/content/posts/ltcd-1.md
+20:55:53 [glob-loader] Reloaded data from ltcd-1.md
+20:55:54 [200] /posts/ltcd-1/ 111ms
+20:55:55 [200] /posts/ltcd-1/ 8ms
+20:55:56 [watch] src/content/posts/ltcd-1.md
+20:55:56 [watch] src/content/posts/ltcd-1.md
+20:55:56 [glob-loader] Reloaded data from ltcd-1.md
+20:55:56 [200] /posts/ltcd-1/ 114ms
+20:55:56 [200] /posts/ltcd-1/ 8ms
+20:56:12 [watch] src/content/posts/ltcd-1.md
+20:56:12 [watch] src/content/posts/ltcd-1.md
+20:56:12 [glob-loader] Reloaded data from ltcd-1.md
+20:56:13 [200] /posts/ltcd-1/ 107ms
+20:56:13 [200] /posts/ltcd-1/ 7ms
+20:56:19 [200] /posts/ltcd-1/ 7ms
+20:56:19 [200] /posts/ltcd-1/ 8ms
+20:56:20 [200] /archive/ 9ms
+20:56:20 [200] /archive/ 8ms
+20:56:20 [200] /archive/ 8ms
+20:56:20 [200] /archive/ 8ms
+20:56:23 [200] /posts/ltcd-1/ 8ms
+20:56:23 [200] /posts/ltcd-1/ 8ms
+20:57:04 [200] /archive/ 7ms
+20:58:14 [200] /archive/ 8ms
+20:58:14 [200] /projects/ 8ms
+20:58:15 [200] /archive/ 9ms
+20:58:22 [200] /posts/ai-agent-huanjue/ 10ms
+20:58:22 [200] /posts/ai-agent-guanxian/ 9ms
+20:58:22 [200] /posts/ai-agent/ 9ms
+20:58:22 [200] /posts/github-begin/ 10ms
+20:58:22 [200] /posts/ai-wtf/ 12ms
+20:58:22 [200] /posts/web-begin-guide/ 9ms
+20:58:22 [200] /posts/welcome/ 7ms
+20:58:35 [200] /about/ 9ms
+ ELIFECYCLE  Command failed with exit code 4294967295.

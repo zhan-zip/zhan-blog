@@ -3,7 +3,7 @@ title: 06-Agent？网页接个api就万事大吉？-第[2]期
 published: 2026-08-19
 description: 如何尽可能降低ai幻觉率？
 category: Agent项目思路讲解
-tags: [教程, 进阶, agent]
+tags: [教程, 进阶, agent, ai]
 ---
 
 # 本期话题——如何尽可能降低ai回复的幻觉率？
