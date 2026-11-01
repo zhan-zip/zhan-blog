@@ -14,15 +14,16 @@ tags = params.has("tag") ? params.getAll("tag") : [];
 categories = params.has("category") ? params.getAll("category") : [];
 const uncategorized = params.get("uncategorized");
 
-interface Post {
-	slug: string;
-	data: {
-		title: string;
-		tags: string[];
-		category?: string;
-		published: Date;
-	};
-}
+	interface Post {
+		slug: string;
+		data: {
+			title: string;
+			tags: string[];
+			category?: string;
+			published: Date;
+			importance?: string;
+		};
+	}
 
 interface Group {
 	year: number;
@@ -119,11 +120,12 @@ onMount(async () => {
                         <div class="w-[15%] md:w-[10%] relative dash-line h-full flex items-center">
                             <div
                                     class="transition-all mx-auto w-1 h-1 rounded group-hover:h-5
-                       bg-[oklch(0.5_0.05_var(--hue))] group-hover:bg-[var(--primary)]
-                       outline outline-4 z-50
-                       outline-[var(--card-bg)]
-                       group-hover:outline-[var(--btn-plain-bg-hover)]
-                       group-active:outline-[var(--btn-plain-bg-active)]"
+                        {post.data.importance === 'high' ? 'bg-[var(--primary)]' : 'bg-[oklch(0.5_0.05_var(--hue))]'}
+                        group-hover:bg-[var(--primary)]
+                        outline outline-4 z-50
+                        outline-[var(--card-bg)]
+                        group-hover:outline-[var(--btn-plain-bg-hover)]
+                        group-active:outline-[var(--btn-plain-bg-active)]"
                             ></div>
                         </div>
 
@@ -131,7 +133,8 @@ onMount(async () => {
                         <div
                                 class="w-[70%] md:max-w-[65%] md:w-[65%] text-left font-bold
                      group-hover:translate-x-1 transition-all group-hover:text-[var(--primary)]
-                     text-75 pr-8 whitespace-nowrap overflow-ellipsis overflow-hidden"
+                     {post.data.importance === 'high' ? 'text-[var(--primary)]' : post.data.importance === 'low' ? 'text-30' : 'text-75'}
+                     pr-8 whitespace-nowrap overflow-ellipsis overflow-hidden"
                         >
                             {post.data.title}
                         </div>
