@@ -1,6 +1,7 @@
 ---
 title: 05-Agent？网页接个api就万事大吉？-第[1]期
 published: 2026-08-17
+importance: high
 description: 消息发给ai后，具体都做了什么？
 category: Agent项目思路讲解
 tags: [教程, 进阶, agent, ai]

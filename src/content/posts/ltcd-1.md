@@ -1,6 +1,7 @@
 ---
 title: 07-leetcode第[1]期-二分查找
 published: 2026-09-01
+importance: low
 description: 二分查找是什么？怎么写？左闭右闭的区别是？
 category: leetcode
 tags: [力扣, 算法, 基础, 教程]

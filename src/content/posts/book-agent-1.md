@@ -1,6 +1,7 @@
 ---
 title: 14-读书心得[深入理解AI-Agent-设计原理与工程实践]
 published: 2026-10-10
+importance: high
 description: 无
 category: 读书心得
 tags: [读后感, agent, ai]

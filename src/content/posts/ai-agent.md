@@ -1,6 +1,7 @@
 ---
 title: 04-Agent？网页接个api就万事大吉？-第[0]期
 published: 2026-08-16
+importance: low
 description: Agent是什么？不就是调个api接上就行吗？
 category: Agent项目思路讲解
 tags: [教程, 进阶, agent, ai]

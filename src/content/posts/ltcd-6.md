@@ -1,6 +1,7 @@
 ---
 title: 13-leetcode第[6]期-移除链表元素
 published: 2026-09-09
+importance: low
 description: 无
 category: leetcode
 tags: [力扣, 算法]

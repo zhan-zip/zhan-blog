@@ -1,6 +1,7 @@
 ---
 title: 15-AI时代，我们真的还要学习代码吗？
 published: 2026-10-30
+importance: high
 description: 无
 category: 随笔
 tags: [随笔]

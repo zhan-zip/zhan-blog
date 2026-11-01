@@ -1,6 +1,7 @@
 ---
 title: 00-欢迎来到一盏的博客
 published: 2026-08-11
+importance: low
 description: 我的个人博客正式上线，记录开发经历、分享实用教程，欢迎交流。
 category: 随笔
 tags: [随笔]

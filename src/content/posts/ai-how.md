@@ -1,6 +1,7 @@
 ---
 title: 10-用ai做点东西？怎么开始啊……
 published: 2026-09-05
+importance: high
 description: 如何使用ai以及agent工具开始做个人项目
 category: 入门教程
 tags: [教程, 基础, ai]

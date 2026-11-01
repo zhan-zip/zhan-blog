@@ -1,6 +1,7 @@
 ---
 title: 08-leetcode第[2]期-移除元素
 published: 2026-09-02
+importance: low
 description: 为什么数组中删除的并不是元素本身？
 category: leetcode
 tags: [力扣, 算法, 基础, 教程]

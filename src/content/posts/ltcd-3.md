@@ -1,6 +1,7 @@
 ---
 title: 09-leetcode第[3]期-有序数组的平方
 published: 2026-09-03
+importance: low
 description: 无
 category: leetcode
 tags: [力扣, 算法]
