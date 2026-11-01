@@ -1,0 +1,141 @@
+---
+import { Icon } from "astro-icon/components";
+import { url } from "@utils/url-utils";
+
+interface Props {
+	slug: string;
+	class?: string;
+}
+
+const { slug, class: className } = Astro.props;
+---
+
+<div class:list={["card-base px-6 md:px-7 py-5 mt-6 mb-6 no-print", className]}>
+	<div class="flex items-center gap-2 mb-4">
+		<Icon name="material-symbols:download-rounded" class="text-[1.25rem] text-[var(--primary)]" />
+		<div class="transition font-bold text-90">把这篇保存到本地</div>
+	</div>
+	<div class="flex flex-wrap items-center gap-3">
+		<a href={url(`/download/${slug}.md`)} download={`${slug}.md`}
+		   class="btn-card h-10 px-4 rounded-xl flex items-center gap-2 text-sm transition text-75 active:scale-95">
+			<Icon name="material-symbols:markdown" class="text-[1.125rem]" />
+			Markdown 原文
+		</a>
+		<a href={url(`/download/${slug}.txt`)} download={`${slug}.txt`}
+		   class="btn-card h-10 px-4 rounded-xl flex items-center gap-2 text-sm transition text-75 active:scale-95">
+			<Icon name="material-symbols:description-rounded" class="text-[1.125rem]" />
+			纯文本 TXT
+		</a>
+		<button type="button" data-print-pdf
+				class="btn-card h-10 px-4 rounded-xl flex items-center gap-2 text-sm transition text-75 active:scale-95 cursor-pointer">
+			<Icon name="material-symbols:picture-as-pdf-rounded" class="text-[1.125rem]" />
+			保存为 PDF
+		</button>
+	</div>
+	<div class="mt-3 text-xs text-30">PDF 请在打印窗口选择「另存为 PDF」，可保留图片与代码</div>
+</div>
+
+<script>
+	document.addEventListener("click", (event) => {
+		const target = event.target as HTMLElement | null;
+		if (target?.closest("[data-print-pdf]")) {
+			window.print();
+		}
+	});
+</script>
+
+<style is:global>
+	@media print {
+		@page {
+			margin: 14mm 12mm;
+		}
+
+		html,
+		body {
+			background: #fff !important;
+		}
+
+		/* 隐藏导航、横幅、侧栏、目录、页脚、返回顶部、评论、订阅、上下篇、下载卡片 */
+		#top-row,
+		#banner-wrapper,
+		#banner-credit,
+		#sidebar,
+		.footer,
+		#back-to-top-btn,
+		#toc-wrapper,
+		#toc,
+		.no-print,
+		#page-height-extend {
+			display: none !important;
+		}
+
+		/* 还原为文档流，避免绝对定位产生空白页 */
+		div.z-30.absolute,
+		#main-grid {
+			position: static !important;
+			top: auto !important;
+			transform: none !important;
+			display: block !important;
+			max-width: 100% !important;
+		}
+
+		#swup-container,
+		#content-wrapper {
+			overflow: visible !important;
+		}
+
+		#post-container {
+			padding: 0 !important;
+			border-radius: 0 !important;
+			box-shadow: none !important;
+		}
+
+		/* 打印统一深色文字，避免暗色模式打出白字 */
+		#post-container,
+		#post-container * {
+			color: #111 !important;
+			-webkit-print-color-adjust: exact;
+			print-color-adjust: exact;
+		}
+
+		#post-container {
+			font-size: 11pt;
+			line-height: 1.65;
+		}
+
+		a {
+			text-decoration: underline;
+		}
+
+		/* 代码块浅底深字，清晰且省墨 */
+		.expressive-code,
+		.expressive-code pre,
+		.expressive-code code,
+		.expressive-code .frame,
+		.expressive-code .frame pre {
+			background: #f3f5f7 !important;
+			border: 1px solid #e1e5e9 !important;
+			color: #111 !important;
+		}
+
+		img {
+			max-width: 100% !important;
+			page-break-inside: avoid;
+		}
+
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			page-break-after: avoid;
+		}
+
+		pre,
+		table,
+		blockquote {
+			page-break-inside: avoid;
+		}
+	}
+</style>
